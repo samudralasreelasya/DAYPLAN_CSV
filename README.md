@@ -1,20 +1,40 @@
 # DayPlan — AI Smart Travel Planner
 
 A full-stack travel planning app: React (Vite + Tailwind) frontend, Flask REST API backend,
-SQLite database, and **only free, keyless APIs** (OpenStreetMap / Nominatim, OSRM, Open-Meteo,
-Overpass).
+SQLite database, **free keyless live APIs** (OpenStreetMap / Nominatim, OSRM, Open-Meteo,
+Overpass) blended with **curated local CSV datasets** as a resilience layer and standalone
+feature source.
+
+## What's in this project
+
+- Live trip planning (route, weather, attractions, hotels, restaurants, budget, AI itinerary)
+  sourced from free OpenStreetMap-ecosystem APIs.
+- A **local dataset layer** (`backend/data/`) covering ~460 curated Indian tourist spots and
+  30 globally famous landmarks, wired into the backend as:
+  - **A fallback** — if the live Overpass API returns too little (or fails/times out), the
+    app blends in curated local attractions instead of showing an empty page, computing real
+    distances with the same haversine logic used for live results.
+  - **A feature** — `/api/trending` surfaces the most-visited famous landmarks worldwide,
+    independent of any live API call.
+- **Graceful degradation**: every external API call in the main planning flow (Overpass ×3,
+  OSRM, Open-Meteo) is individually fault-tolerant. If one service is temporarily unavailable,
+  the rest of the trip plan still renders instead of the whole request failing.
 
 ## Project Structure
 
 ```
 dayplan/
 ├── backend/          Flask REST API
-│   ├── app.py         App factory & entrypoint
-│   ├── config.py       Environment-driven configuration
-│   ├── database/        SQLAlchemy models
-│   ├── routes/         Thin controllers (one blueprint per resource)
-│   ├── services/        All external API integrations & business logic
-│   └── utils/          Validators & centralized error handling
+│   ├── app.py                  App factory & entrypoint (loads CSV datasets at startup)
+│   ├── config.py                Environment-driven configuration
+│   ├── data/                   Local CSV datasets (curated attractions, famous places)
+│   ├── database/                 SQLAlchemy models
+│   ├── routes/                  Thin controllers (one blueprint per resource)
+│   ├── services/
+│   │   ├── local_data_service.py   Loads/serves the CSV datasets from memory
+│   │   ├── destination_service.py  Live + local attraction merge, fallback, sorting
+│   │   └── ...                    Other external API integrations & business logic
+│   └── utils/                   Validators, geo math (haversine), centralized error handling
 └── frontend/          React + Vite + Tailwind app
     └── src/
         ├── api/          Axios client
@@ -61,8 +81,28 @@ npm run dev                     # runs on http://localhost:5173
 | Geocoding    | OpenStreetMap Nominatim            |
 | Routing      | OSRM (Open Source Routing Machine) |
 | Weather      | Open-Meteo                         |
-| Hotels/Food/Attractions | Overpass API (OpenStreetMap) |
+| Hotels/Food/Attractions | Overpass API (OpenStreetMap), backed by local CSV fallback |
 | Maps         | Leaflet.js + OpenStreetMap tiles   |
+
+## Local Dataset Endpoints
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/local-attractions?city=<name>` | Curated attractions for one of 13 pre-loaded Indian cities |
+| `GET /api/trending?limit=<n>` | Top N globally famous landmarks by annual visitor count |
+
+## Resilience Design
+
+Rather than a single all-or-nothing API call, `POST /api/plan-trip` treats each external
+dependency independently:
+
+- **Attractions**: tries Overpass first; if it returns fewer than 5 results (or fails
+  entirely), curated CSV spots are blended in and the combined list is sorted by real
+  distance from the destination.
+- **Hotels / Restaurants / Route / Weather**: each wrapped individually, so a single failed
+  service degrades that one section of the response (empty list / `null`) instead of
+  failing the whole request. All failures are logged server-side via Python's `logging`
+  module for visibility during development.
 
 ## Deployment
 
