@@ -12,7 +12,8 @@ BASE_LOCAL_TRANSPORT_PER_DAY = 8
 BASE_ENTRY_FEES_PER_DAY = 10
 
 
-def estimate_budget(people, days, preference, distance_km=0):
+def estimate_budget(people, days, preference, distance_km=None):
+    distance_km = distance_km or 0
     multiplier = PREFERENCE_MULTIPLIERS.get(preference, 1.0)
 
     travel_cost = round(distance_km * 0.08 * people, 2)  # rough per-km fuel/fare estimate
