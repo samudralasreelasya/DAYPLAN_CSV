@@ -1,0 +1,10 @@
+﻿RestaurantID,Name,Category,Type,VegStatus,Area,OpeningHours,Notes,SourceURL,Latitude,Longitude
+D001,Red Fort,monument,heritage,NA,Old Delhi,"Verify locally (typically 9:30 AM - 4:30 PM, closed Mondays)",Mughal-era fort; UNESCO World Heritage Site,https://www.holidify.com/places/delhi/sightseeing-and-things-to-do.html,28.656081,77.2407959
+D002,Chandni Chowk,monument,heritage_market,NA,"Old Delhi, opposite Red Fort",Market hours vary; evening food stalls busiest,17th-century market built by Shah Jahan; major food destination,https://www.holidify.com/places/delhi/sightseeing-and-things-to-do.html,,
+D003,Jama Masjid,monument,heritage,NA,Old Delhi,Open outside prayer times (verify locally),One of India's largest mosques,https://wanderboat.ai/attractions/india/delhi/delhi-gate-red-fort/-TYWrGDDRxG-TFiKIQe3iQ,28.6506822,77.232961
+D004,Karim's,restaurant,mughlai,non-veg,Old Delhi (near Jama Masjid),Verify locally,Historic Mughlai and kebab restaurant,https://www.thedelhitours.com/blog/famous-food-places-in-delhi/,,
+D005,Kake Di Hatti,restaurant,punjabi_veg,veg,"Fatehpuri, Chandni Chowk",Verify locally,Fully vegetarian dhaba; famous naan and sarson ka saag,https://suzannewandersdelhi.com/best-food-in-old-delhi/,,
+D006,Al Jawahar,restaurant,mughlai,non-veg,"Jama Masjid, Meena Bazaar",Verify locally,Chicken Jahangiri and Chicken Biryani; also has veg options,https://travelsetu.com/guide/red-fort-delhi-tourism/food-in-red-fort-delhi,28.6506822,77.232961
+D007,Paranthe Wali Gali,street_food,paratha,veg,Chandni Chowk,Verify locally,Historic lane famous for stuffed parathas,https://www.holidify.com/places/delhi/sightseeing-and-things-to-do.html,28.6560822,77.230481
+D008,Old Famous Jalebi Wala,restaurant,sweets,veg,"Dariba Kalan, Chandni Chowk",Verify locally,Considered the oldest and most famous jalebi shop in Delhi,https://travelsetu.com/guide/red-fort-delhi-tourism/food-in-red-fort-delhi,28.6545551,77.2334018
+D009,Bukhara,restaurant,fine_dining_non_veg,non-veg,"ITC Maurya, Chanakyapuri",Verify locally,Premium North-West Frontier fine dining,https://www.thedelhitours.com/blog/famous-food-places-in-delhi/,,

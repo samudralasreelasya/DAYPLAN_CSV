@@ -1,0 +1,10 @@
+﻿RestaurantID,Name,Category,Type,VegStatus,Area,OpeningHours,Notes,SourceURL,Latitude,Longitude
+G001,Kamakhya Temple,monument,temple,NA,Nilachal Hill,Verify locally,One of India's 51 Shakti Peethas; major pilgrimage site,https://blog.explurger.com/places-to-visit-in-guwahati/,,
+G002,Umananda Island (Peacock Island),monument,island_temple,NA,"Brahmaputra River, near Guwahati High Court",5:00 AM - 6:00 PM (verify locally),World's smallest inhabited river island; Shiva temple built 1694 CE,https://blog.explurger.com/places-to-visit-in-guwahati/,,
+G003,Assam State Zoo cum Botanical Garden,monument,zoo,NA,Hengrabari Forest Area,Verify locally,Over 400 acres; one of the largest zoos in Northeast India,https://blog.explurger.com/places-to-visit-in-guwahati/,,
+G004,Brahmaputra River Cruise,hidden_spot,river_cruise,NA,Brahmaputra River,Evening sunset/dinner cruise slots,Popular sunset and dinner cruise with Assamese folk performances,https://blog.explurger.com/places-to-visit-in-guwahati/,,
+G005,Dipor Bil,hidden_spot,lake,NA,"Kamrup district, ~18 km from city",Verify locally,Freshwater lake in a former Brahmaputra channel,https://www.holidify.com/places/guwahati/sightseeing-and-things-to-do.html,,
+G006,Paradise Restaurant,restaurant,assamese,non-veg,"GS Road - Shillong Highway, Lachit Nagar",Verify locally,Known for Masor Tenga (tangy fish curry),https://travelsetu.com/guide/guwahati-tourism/food-in-guwahati,,
+G007,Khorikaa,restaurant,assamese,non-veg,"GNB Road, Dighalipukhuri",Verify locally,Known for Duck Roast,https://travelsetu.com/guide/guwahati-tourism/food-in-guwahati,,
+G008,Heritage Khorikaa,restaurant,assamese,veg,Chandmari,Verify locally,Known for Bamboo Shoot Fry,https://travelsetu.com/guide/guwahati-tourism/food-in-guwahati,26.1841165,91.7740906
+G009,Gam's Delicacy Restaurant,restaurant,assamese_thali,both,"MD Shah Road, Paltan Bazaar",Verify locally,Assamese thali available in both veg and non-veg options,https://travelsetu.com/guide/guwahati-tourism/food-in-guwahati,,

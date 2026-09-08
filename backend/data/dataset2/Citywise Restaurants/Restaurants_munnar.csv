@@ -1,0 +1,9 @@
+﻿RestaurantID,Name,Category,Type,VegStatus,Area,OpeningHours,Notes,SourceURL,Latitude,Longitude
+MN001,Eravikulam National Park,monument,park,NA,Rajamalai,Verify locally,Home to the endangered Nilgiri Tahr; grassland scenery,https://keralatourism.travel/destinations/munnar,,
+MN002,Munnar Tea Museum,monument,museum,NA,Nallathanni Estate,Verify locally,Run by Tata Tea; tea-processing history and demonstrations,https://keralatourism.travel/destinations/munnar,,
+MN003,Mattupetty Dam,monument,dam,NA,Mattupetty,Verify locally,Hydroelectric dam with scenic surroundings,https://keralatourism.travel/destinations/munnar,10.1064969,77.1226287
+MN004,Attukad Waterfalls,hidden_spot,waterfall,NA,Near Munnar town,Verify locally,Picturesque falls amid lush greenery,https://keralatourism.travel/destinations/munnar,,
+MN005,Top Station,hidden_spot,viewpoint,NA,~32 km from Munnar,Verify locally,Elevated viewpoint at the entrance to Munnar with valley views,https://keralatourism.travel/destinations/munnar,,
+MN006,Saravana Bhavan,restaurant,south_indian_veg,veg,Munnar town,Verify locally,Popular for Kerala Sadhya (24-28 dish traditional feast),https://www.makemytrip.com/tripideas/foodie-hotspots-munnar,10.0966738,77.0271697
+MN007,Rapsy Restaurant,restaurant,kerala_non_veg,non-veg,Munnar town,Verify locally,Known for chicken and mutton biryani,https://www.makemytrip.com/tripideas/foodie-hotspots-munnar,10.0966738,77.0271697
+MN008,Copper Castle Restaurant,restaurant,multi_cuisine,both,"Abad Copper Castle resort, Kannan Devan Hills",Verify locally,Veg and non-veg regional specialities amid tea-estate views,https://www.makemytrip.com/tripideas/foodie-hotspots-munnar,,

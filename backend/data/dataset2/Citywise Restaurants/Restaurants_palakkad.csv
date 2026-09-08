@@ -1,0 +1,8 @@
+﻿RestaurantID,Name,Category,Type,VegStatus,Area,OpeningHours,Notes,SourceURL,Latitude,Longitude
+P001,Palakkad Fort (Tipu Sultan Fort),monument,heritage,NA,Palakkad town,Verify locally,18th-century granite fort with moat and Hanuman temple,https://www.crazymasalafood.com/top-20-non-veg-restaurant-palakkad-kerala/,10.7777845,76.6510576
+P002,Malampuzha Dam and Gardens,monument,dam_garden,NA,"Malampuzha, near Palakkad",Verify locally,Dam with landscaped gardens and a rock garden made from recycled materials,https://www.tusktravel.com/blog/things-to-do-in-palakkad/,,
+P003,Silent Valley National Park,monument,park,NA,Mannarkkad Taluk,Verify locally,Protected rainforest ecosystem in the Western Ghats,https://www.holidify.com/places/palakkad/restaurants-places-to-eat-local-cuisine.html,10.9948091,76.4662335
+P004,Kalpathy Viswanatha Swamy Temple,monument,temple,NA,"Kalpathy, on the Kalpathy River",Verify locally,15th-century temple; site of the annual Ratholsavam chariot festival,https://wanderlog.com/tp/979/palakkad-trip-planner,,
+P005,Hasi's Kitchen,restaurant,kerala_non_veg,non-veg,Near Palakkad town railway station,Verify locally,Known for Malabar biryani and prawns fry,https://wanderlog.com/list/geoCategory/1186124/best-indian-foods-and-restaurants-in-palakkad,,
+P006,Malabar Restaurant,restaurant,malabar,non-veg,Palakkad town,Verify locally,Wide range of Malabar chicken dishes and biryani,https://wanderlog.com/place/details/10553021,10.7777845,76.6510576
+P007,Noorjehan Restaurant,restaurant,seafood_non_veg,non-veg,"Small Fort Maidan, Sultanpet",8:00 AM - 11:00 PM (verify locally),"Known for Garlic Fish, Prawn Chili, Crab Roast",https://www.crazymasalafood.com/top-20-non-veg-restaurant-palakkad-kerala/,,

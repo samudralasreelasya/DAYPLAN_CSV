@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify
+﻿from flask import Blueprint, request, jsonify
 
-from services import geocoding_service, overpass_service
+from services import geocoding_service, restaurant_service
 from utils.validators import require_fields
 
 restaurants_bp = Blueprint("restaurants", __name__)
@@ -11,5 +11,12 @@ def get_restaurants():
     args = request.args
     require_fields(args, ["destination"])
     geo = geocoding_service.geocode(args["destination"])
-    restaurants = overpass_service.get_restaurants(geo["lat"], geo["lon"])
-    return jsonify({"destination": geo, "restaurants": restaurants})
+
+    # ?veg=true lets the frontend request veg-only results without a
+    # separate endpoint - same query-param style as the rest of your API.
+    veg_only = args.get("veg", "false").lower() == "true"
+
+    result = restaurant_service.get_restaurant_details(
+        args["destination"], geo["lat"], geo["lon"], veg_only=veg_only
+    )
+    return jsonify(result)

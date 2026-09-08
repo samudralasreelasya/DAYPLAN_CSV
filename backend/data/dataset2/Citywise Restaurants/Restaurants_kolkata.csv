@@ -1,0 +1,11 @@
+﻿RestaurantID,Name,Category,Type,VegStatus,Area,OpeningHours,Notes,SourceURL,Latitude,Longitude
+K001,Victoria Memorial,monument,heritage,NA,Maidan area,Verify locally,Grand marble monument and museum; major Kolkata landmark,https://www.thrillophilia.com/destinations/kolkata/places-to-visit,22.5449558,88.3425545
+K002,Howrah Bridge,monument,heritage,NA,Hooghly River,Open at all hours (viewing),Iconic cantilever bridge connecting Kolkata and Howrah,https://www.thrillophilia.com/destinations/kolkata/places-to-visit,,
+K003,Belur Math,monument,temple,NA,"Belur, Howrah side",Verify locally,Headquarters of the Ramakrishna Math and Mission,https://www.thrillophilia.com/destinations/kolkata/places-to-visit,,
+K004,Dakshineswar Kali Temple,monument,temple,NA,Dakshineswar,Verify locally,Historic temple on the banks of the Hooghly River,https://www.thrillophilia.com/destinations/kolkata/places-to-visit,22.654827,88.3575776
+K005,Fort William,monument,heritage,NA,Kolkata Maidan,Restricted access; exterior viewing,Colonial-era fort with white sparkling structure,https://www.revv.co.in/blogs/places-to-eat-in-kolkata/,22.5544966,88.3380132
+K006,Kewpie's,restaurant,bengali,both,"Elgin Lane, near Netaji Bhawan",Verify locally,Traditional Bengali veg and non-veg food; known for fish and seafood,https://www.quora.com/As-a-foodie-what-are-the-best-non-veg-places-in-Kolkata-I-am-visiting-shortly-in-December,,
+K007,Arsalan,restaurant,biryani_mughlai,non-veg,Multiple outlets,Verify locally,Known for biryani and Mughlai dishes,https://www.quora.com/As-a-foodie-what-are-the-best-non-veg-places-in-Kolkata-I-am-visiting-shortly-in-December,,
+K008,Peter Cat,restaurant,continental_non_veg,non-veg,Park Street,Verify locally,Famous for chelo kabab,https://www.tripadvisor.com/RestaurantsNear-g304558-d311680-Victoria_Memorial_Hall-Kolkata_Calcutta_Kolkata_District_West_Bengal.html,22.5551591,88.3501171
+K009,Aaheli,restaurant,bengali_fine_dining,both,Peerless Inn,Verify locally,"Elegant, sophisticated authentic Bengali spread",https://www.revv.co.in/blogs/places-to-eat-in-kolkata/,22.5624378,88.3515713
+K010,Flurry's,restaurant,bakery_cafe,veg,Park Street,Verify locally,Iconic colonial-era bakery and cafe,https://www.revv.co.in/blogs/places-to-eat-in-kolkata/,22.5551591,88.3501171

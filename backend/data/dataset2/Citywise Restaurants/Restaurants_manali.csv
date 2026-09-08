@@ -1,0 +1,9 @@
+﻿RestaurantID,Name,Category,Type,VegStatus,Area,OpeningHours,Notes,SourceURL,Latitude,Longitude
+M001,Hadimba Temple,monument,temple,NA,Old Manali,Verify locally,"Wooden temple dedicated to Hadimba Devi, from the Mahabharata epic",https://www.actempotravellerhire.com/blog/places-to-visit-in-manali/,32.2484443,77.1808391
+M002,Solang Valley,monument,valley,NA,Near Manali town,Verify locally,"Adventure sports valley: paragliding, skiing, ropeway",https://www.holidify.com/places/manali/sightseeing-and-things-to-do.html,32.2428895,77.1871748
+M003,Old Manali,hidden_spot,town_area,NA,Across Manu Bridge,Cafes typically open through evening,Bohemian riverside lane with cafes and shops,https://www.holidify.com/places/manali/sightseeing-and-things-to-do.html,,
+M004,Vashisht Hot Springs,hidden_spot,hot_spring,NA,Vashisht Village,Verify locally,Natural sulphur hot springs near a temple complex,https://www.naturetravelagency.com/blogdetails.php?uri=best-places-to-eat-in-manali,32.2668589,77.1875916
+M005,Johnson's Cafe,restaurant,continental_non_veg,non-veg,"Circuit House Road, Siyal",Verify locally,Famous for grilled trout fish,https://travelsetu.com/guide/manali-tourism/food-in-manali,,
+M006,Il Forno,restaurant,italian,both,Hadimba Temple Road,Verify locally,"19th-century lodge; Italian pizzas, calzones, lasagna",https://wanderlog.com/list/geoCategory/1542588/best-non-veg-restaurants-in-manali,32.2484443,77.1808391
+M007,Chopsticks Restaurant,restaurant,tibetan,both,"Manu Temple Road, Old Manali",Verify locally,Known for Thukpa; yak cheese momos for non-veg alternative,https://travelsetu.com/guide/manali-tourism/food-in-manali,,
+M008,Drifter's Cafe,restaurant,cafe,both,Old Manali,Verify locally,Popular cafe; also arranges paragliding/river rafting bookings,https://wanderon.in/blogs/places-to-eat-in-manali,32.2551582,77.1765927

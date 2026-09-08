@@ -1,0 +1,7 @@
+﻿RestaurantID,Name,Category,Type,VegStatus,Area,OpeningHours,Notes,SourceURL,Latitude,Longitude
+PU001,Shaniwar Wada,monument,heritage,NA,Sadashiv Peth,Verify locally,18th-century Maratha fortification; former Peshwa seat,https://athingstodo.com/places-to-visit-in-pune/,18.5107764,73.8502149
+PU002,Sinhagad Fort,monument,heritage,NA,~35 km from Pune city,Verify locally,Historic hilltop fort associated with Maratha history,https://athingstodo.com/places-to-visit-in-pune/,18.4821309,73.8433475
+PU003,Dagdusheth Halwai Ganpati Temple,monument,temple,NA,Budhwar Peth,Verify locally,"Famous Ganesha temple, especially popular during Ganesh Chaturthi",https://athingstodo.com/places-to-visit-in-pune/,18.5175599,73.858037
+PU004,Maratha Samrat,restaurant,maharashtrian,both,Camp,Verify locally,Known for meaty offerings and an 8-dish veg thali,https://wanderlog.com/list/geoCategory/1542545/non-veg-restaurants,18.5216239,73.8717527
+PU005,Durvankur Dining Hall,restaurant,maharashtrian_veg,veg,"Sadashiv Peth, near Shaniwar Wada",Busiest at lunch (verify locally),"Classic Maharashtrian thali with bhakri, varan and vegetables",https://www.otestays.com/pune/best-maharashtrian-restaurants-in-pune,,
+PU006,Shreyas Restaurant,restaurant,maharashtrian_veg,veg,Pune city,Verify locally,Traditional home-style Maharashtrian thalis,https://www.otestays.com/pune/best-maharashtrian-restaurants-in-pune,18.5213738,73.8545071

@@ -1,0 +1,7 @@
+﻿RestaurantID,Name,Category,Type,VegStatus,Area,OpeningHours,Notes,SourceURL,Latitude,Longitude
+CH001,Marina Beach,monument,beach,NA,Chennai coastline,Open daylight/evening hours,One of the world's longest urban beaches; historic landmarks nearby,https://www.tripadvisor.com/RestaurantsNear-g304556-d321279-oa120-Marina_Beach-Chennai_Madras_Chennai_District_Tamil_Nadu.html,,
+CH002,Kapaleeshwarar Temple,monument,temple,NA,Mylapore,Verify locally,Centuries-old Dravidian-architecture temple,https://www.expedia.com/cn/Chennai-Alwarpet.dx6302954,13.0334336,80.268696
+CH003,Buhari,restaurant,biryani,non-veg,Multiple outlets,Verify locally,Longstanding Chennai institution for biryani,https://www.tripadvisor.in/Restaurants-g304556-zfn13087590-Chennai_Madras_Chennai_District_Tamil_Nadu.html,,
+CH004,Nair Mess,restaurant,seafood,non-veg,"Triplicane, Marina Beach area",Verify locally,Budget Kerala-style seafood; famous for vanjaram seer fish fry,https://wanderlog.com/list/geoCategory/81134/the-33-best-seafood-restaurants-in-chennai-madras,,
+CH005,Amaravathi,restaurant,andhra_cuisine,non-veg,Cathedral Road,Verify locally,Known for spicy Andhra non-veg dishes,https://www.tripadvisor.com/RestaurantsNear-g304556-d321279-oa120-Marina_Beach-Chennai_Madras_Chennai_District_Tamil_Nadu.html,13.046844,80.2546999
+CH006,Sanjeevanam,restaurant,ayurvedic_veg,veg,Nungambakkam,Verify locally,Ayurvedic vegetarian restaurant,https://www.tripadvisor.in/Restaurants-g304556-zfn13087590-Chennai_Madras_Chennai_District_Tamil_Nadu.html,13.0620626,80.240487

@@ -1,0 +1,11 @@
+﻿RestaurantID,Name,Category,Type,VegStatus,Area,OpeningHours,Notes,SourceURL,Latitude,Longitude
+CB001,Marudamalai Temple,monument,temple,NA,Marudamalai Hill,Verify locally,Hilltop Lord Murugan temple with panoramic views,https://www.agoda.com/travel-guides/india/coimbatore/discover-the-best-tourist-places-in-coimbatore-top-10-spots/,,
+CB002,Perur Pateeswarar Temple,monument,temple,NA,Banks of Noyyal River,Verify locally,Ancient Shiva temple noted for Dravidian architecture,https://thehealinghills.com/blog/top-10-must-visit-tourist-places-in-coimbatore/,,
+CB003,VOC Park & Zoo,monument,zoo,NA,Coimbatore city center,Verify locally,Zoological garden and amusement park; family picnic spot,https://www.roofandfloor.com/coimbatore/blog/top-tourist-places-in-coimbatore,,
+CB004,Siruvani Waterfalls,hidden_spot,waterfall,NA,~35 km from city,Verify locally,Scenic waterfall surrounded by lush forest,https://thehealinghills.com/blog/top-10-must-visit-tourist-places-in-coimbatore/,,
+CB005,Gass Forest Museum,hidden_spot,museum,NA,Coimbatore city,Verify locally,Forest and wildlife-themed museum,https://www.agoda.com/travel-guides/india/coimbatore/discover-coimbatores-hidden-gems-top-tourist-places-to-explore/,11.0018115,76.9628425
+CB006,Kovai Kondattam,monument,theme_park,NA,Near Perur,Verify locally,Eco-friendly amusement park with wet and dry rides,https://www.roofandfloor.com/coimbatore/blog/top-tourist-places-in-coimbatore,,
+CB007,Junior Kuppanna,restaurant,biryani,non-veg,Peelamedu,11:45 AM - 4:00 PM and 7:00 PM - 10:30 PM,Popular for biryani and Chettinad-style non-veg dishes,https://traveltriangle.com/blog/restaurants-in-coimbatore/,11.0277825,76.9986157
+CB008,Shree Ananddas Laxmi Mills Restaurant,restaurant,south_indian,veg,Laxmi Mills area,Verify locally,"Known for dosas, idlis, vadas and traditional thalis",https://wanderlog.com/list/geoCategory/1542559/best-non-veg-restaurants-in-coimbatore,,
+CB009,Haribhavanam,restaurant,chettinad,non-veg,Coimbatore,Verify locally,Traditional South Indian and Chettinad non-veg meals,https://threebestrated.in/non-veg-restuarants-in-coimbatore-tn,11.0084142,76.9749252
+CB010,Ambur Star Biryani,restaurant,biryani,non-veg,Coimbatore outlets,Verify locally,Specializes in Ambur-style biryani,https://www.top-rated.online/countries/India/cities/Coimbatore/@non_vegetarian_restaurant/top-rated,,
