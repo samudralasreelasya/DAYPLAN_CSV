@@ -1,4 +1,4 @@
-﻿# backend/services/local_data_service.py
+# backend/services/local_data_service.py
 """Loads local CSV datasets once at startup and serves them in-memory.
 Keeps the CSVs out of the request/response cycle for speed."""
 
