@@ -99,3 +99,27 @@ def get_attractions(lat, lon, radius_m=5000):
     """
     data = _query_overpass(query)
     return _elements_to_places(data.get("elements", []), lat, lon, "attraction")
+
+
+def get_highlights(lat, lon, radius_m=5000):
+    """Notable named 'highlight' spots near a destination - dams,
+    viewpoints, forests, scenic bars/parks - a broader, looser category
+    than get_attractions() (which is museums/historic sites only).
+    Feeds the destination-radius highlights tag feature."""
+    query = f"""
+    [out:json][timeout:15];
+    (
+      node["tourism"="viewpoint"](around:{radius_m},{lat},{lon});
+      node["natural"="peak"](around:{radius_m},{lat},{lon});
+      node["natural"="waterfall"](around:{radius_m},{lat},{lon});
+      way["natural"="wood"](around:{radius_m},{lat},{lon});
+      way["landuse"="forest"](around:{radius_m},{lat},{lon});
+      node["waterway"="dam"](around:{radius_m},{lat},{lon});
+      way["waterway"="dam"](around:{radius_m},{lat},{lon});
+      node["amenity"="bar"](around:{radius_m},{lat},{lon});
+      node["leisure"="park"](around:{radius_m},{lat},{lon});
+    );
+    out center 30;
+    """
+    data = _query_overpass(query)
+    return _elements_to_places(data.get("elements", []), lat, lon, "highlight")

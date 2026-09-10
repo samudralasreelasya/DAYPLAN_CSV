@@ -140,3 +140,33 @@ def get_trending_places(limit=10):
 
 def get_famous_places(limit=10):
     return _famous_places_df.head(limit).to_dict(orient="records")
+
+
+def get_nearby_highlights(ref_lat, ref_lon, radius_km=10):
+    """Curated fallback for the highlights feature, using Tourist_Spots.csv.
+    Unlike get_city_spots/get_city_restaurants, this dataset is NOT
+    city-keyed - it is one flat file - so filtering is purely
+    distance-based via haversine_km against every row.
+    """
+    if _tourist_spots_df is None:
+        return []
+
+    records = _tourist_spots_df.to_dict(orient="records")
+    nearby = []
+    for r in records:
+        lat, lon = r.get("Latitude"), r.get("Longitude")
+        if pd.isna(lat) or pd.isna(lon):
+            continue
+        distance = haversine_km(ref_lat, ref_lon, lat, lon)
+        if distance <= radius_km:
+            r["distanceKm"] = round(distance, 2)
+            # Characteristics ("scenic, tea, photography") becomes the
+            # tag list shown to the traveler - this IS the "highlight
+            # tags near destination" feature you described.
+            r["tags"] = [
+                t.strip() for t in str(r.get("Characteristics", "")).split(",") if t.strip()
+            ]
+            nearby.append(r)
+
+    nearby.sort(key=lambda r: r["distanceKm"])
+    return nearby

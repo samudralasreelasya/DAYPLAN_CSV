@@ -14,6 +14,7 @@ from routes.transport import transport_bp
 from routes.route import route_bp
 from routes.hotels import hotels_bp
 from routes.restaurants import restaurants_bp
+from routes.highlights import highlights_bp
 from routes.weather import weather_bp
 from routes.budget import budget_bp
 from routes.itinerary import itinerary_bp
@@ -41,6 +42,7 @@ def create_app():
     app.register_blueprint(route_bp)
     app.register_blueprint(hotels_bp)
     app.register_blueprint(restaurants_bp)
+    app.register_blueprint(highlights_bp)
     app.register_blueprint(weather_bp)
     app.register_blueprint(budget_bp)
     app.register_blueprint(itinerary_bp)
