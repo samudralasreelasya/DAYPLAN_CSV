@@ -2,7 +2,7 @@ import logging
 from flask import Blueprint, request, jsonify
 
 from services import geocoding_service, osrm_service, weather_service
-from services import overpass_service, destination_service, budget_service, ai_service
+from services import overpass_service, destination_service, budget_service, ai_service, restaurant_service
 from utils.validators import require_fields, parse_int, parse_float
 
 logger = logging.getLogger(__name__)
@@ -45,10 +45,16 @@ def plan_trip():
         logger.error("Overpass get_hotels failed: %s", e)
         hotels = []
 
+    # Uses restaurant_service (live Overpass + curated CSV fallback), not a
+    # bare overpass_service call - this is what actually makes the veg/non-veg
+    # fallback dataset reachable from the main planning flow, not just the
+    # standalone /api/restaurants endpoint.
     try:
-        restaurants = overpass_service.get_restaurants(dest_geo["lat"], dest_geo["lon"])
+        restaurants = restaurant_service.get_restaurants_with_fallback(
+            data["destination"], dest_geo["lat"], dest_geo["lon"]
+        )
     except Exception as e:
-        logger.error("Overpass get_restaurants failed: %s", e)
+        logger.error("restaurant_service get_restaurants_with_fallback failed: %s", e)
         restaurants = []
 
     try:
