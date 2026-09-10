@@ -90,17 +90,23 @@ def get_city_restaurants(city_name, ref_lat=None, ref_lon=None, veg_only=False):
     if veg_only:
         records = [r for r in records if r.get("VegStatus") in ("veg", "both")]
 
-    if ref_lat is not None and ref_lon is not None:
-        for r in records:
-            # Rows that failed geocoding (blank Latitude/Longitude) can't
-            # be distance-sorted - skip them rather than crash on NaN.
-            lat, lon = r.get("Latitude"), r.get("Longitude")
-            if pd.notna(lat) and pd.notna(lon):
-                r["distanceKm"] = round(haversine_km(ref_lat, ref_lon, lat, lon), 2)
-            else:
-                r["distanceKm"] = None
-    else:
-        for r in records:
+    for r in records:
+        lat, lon = r.get("Latitude"), r.get("Longitude")
+        has_coords = pd.notna(lat) and pd.notna(lon)
+
+        # pandas reads a blank CSV cell in a numeric column as float NaN.
+        # NaN survives fine inside Python, but jsonify() will emit the
+        # literal token `NaN` in the response body - which is NOT valid
+        # JSON per spec, and browser JSON.parse() throws on it. Sanitize
+        # to None (-> JSON null) here so a row with missing coordinates
+        # degrades gracefully instead of corrupting the whole response.
+        if not has_coords:
+            r["Latitude"] = None
+            r["Longitude"] = None
+
+        if has_coords and ref_lat is not None and ref_lon is not None:
+            r["distanceKm"] = round(haversine_km(ref_lat, ref_lon, lat, lon), 2)
+        else:
             r["distanceKm"] = None
 
     return records
