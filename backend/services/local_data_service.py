@@ -36,8 +36,17 @@ def load_all():
         for fname in os.listdir(restaurants_dir):
             if fname.startswith("Restaurants_") and fname.endswith(".csv"):
                 city = fname.replace("Restaurants_", "").replace(".csv", "").lower()
+                # keep_default_na=False stops pandas from silently treating
+                # the literal string "NA" (a real, deliberate value in our
+                # VegStatus column meaning "no diet tag available") as a
+                # missing value / float NaN. na_values=[''] keeps the
+                # original behaviour for genuinely blank cells (e.g.
+                # ungeocoded Latitude/Longitude), which we still want read
+                # as NaN so pd.notna() checks elsewhere keep working.
                 _citywise_restaurants_cache[city] = pd.read_csv(
-                    os.path.join(restaurants_dir, fname)
+                    os.path.join(restaurants_dir, fname),
+                    keep_default_na=False,
+                    na_values=[""],
                 )
     else:
         logger.warning(
@@ -86,6 +95,17 @@ def get_city_restaurants(city_name, ref_lat=None, ref_lon=None, veg_only=False):
         return []
 
     records = df.to_dict(orient="records")
+
+    # The curated CSVs intentionally combine restaurants AND nearby
+    # hidden-spots/monuments in one file per city (that was the original
+    # brief - broader local coverage, not restaurants-only). But this
+    # function is specifically the RESTAURANT fallback, so non-food rows
+    # need to be filtered out here - otherwise monuments end up blended
+    # into the restaurant list whenever live Overpass results are sparse
+    # and the full file gets pulled in. Confirmed via a live test against
+    # Chandigarh: without this filter, Rock Garden and Zakir Hussain Rose
+    # Garden showed up as "restaurants" with vegStatus NA.
+    records = [r for r in records if r.get("Category") in ("restaurant", "street_food")]
 
     if veg_only:
         records = [r for r in records if r.get("VegStatus") in ("veg", "both")]
