@@ -1,17 +1,58 @@
-﻿import requests
+import logging
+import time
+
+import requests
 from flask import current_app
 from utils.errors import UpstreamServiceError
 from utils.geo import haversine_km
 
+logger = logging.getLogger(__name__)
+
+# --- Fail-fast settings ------------------------------------------------------
+# The public Overpass server is shared and sometimes at capacity. Without a
+# limit, every one of the (up to 4) Overpass calls in a single trip plan waits
+# for its full timeout, so one outage made a trip plan take about a minute.
+#
+# Rule: after ONE failed call, skip Overpass entirely for COOLDOWN_SECONDS and
+# let the callers use their curated CSV fallback straight away. Then try again.
+REQUEST_TIMEOUT = (4, 12)   # (connect, read) seconds - fail fast, do not hang
+COOLDOWN_SECONDS = 120
+_down_until = 0.0           # time.monotonic() value until which Overpass is skipped
+
+
+def _is_outage(exc):
+    """Decide whether a failure means 'Overpass is struggling' (trip the
+    cooldown) or 'our own query was wrong' (do not)."""
+    response = getattr(exc, "response", None)
+    status = getattr(response, "status_code", None)
+    if status is None:
+        return True                      # timeout, connection error, bad JSON...
+    return status >= 500 or status == 429   # server error or rate-limited
+
 
 def _query_overpass(query):
+    global _down_until
+
+    if time.monotonic() < _down_until:
+        raise UpstreamServiceError(
+            "Overpass API", "skipped after a recent failure - using fallback data"
+        )
+
     url = current_app.config["OVERPASS_URL"]
     headers = {"User-Agent": current_app.config["USER_AGENT"]}
     try:
-        resp = requests.post(url, data={"data": query}, headers=headers, timeout=15)
+        resp = requests.post(url, data={"data": query}, headers=headers, timeout=REQUEST_TIMEOUT)
         resp.raise_for_status()
         return resp.json()
-    except requests.RequestException:
+    except requests.RequestException as e:
+        # Log the REAL reason; the error raised below is deliberately generic.
+        status = getattr(getattr(e, "response", None), "status_code", None)
+        reason = f"HTTP {status}" if status else type(e).__name__
+        if _is_outage(e):
+            _down_until = time.monotonic() + COOLDOWN_SECONDS
+            logger.warning("Overpass request failed (%s); skipping Overpass for %ss", reason, COOLDOWN_SECONDS)
+        else:
+            logger.warning("Overpass rejected the query (%s); not treating as an outage", reason)
         raise UpstreamServiceError("Overpass API")
 
 
