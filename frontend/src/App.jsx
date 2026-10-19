@@ -8,6 +8,7 @@ import { ProtectedRoute } from "./components/UI.jsx";
 import Home from "./pages/Home.jsx";
 import Planner from "./pages/Planner.jsx";
 import Destination from "./pages/Destination.jsx";
+import Highlights from "./pages/Highlights.jsx";
 import Transportation from "./pages/Transportation.jsx";
 import MapPage from "./pages/MapPage.jsx";
 import Hotels from "./pages/Hotels.jsx";
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/planner" element={<Planner />} />
           <Route path="/destination" element={<Destination />} />
+          <Route path="/highlights" element={<Highlights />} />
           <Route path="/transportation" element={<Transportation />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/hotels" element={<Hotels />} />

@@ -2,7 +2,7 @@ import logging
 from flask import Blueprint, request, jsonify
 
 from services import geocoding_service, osrm_service, weather_service
-from services import overpass_service, destination_service, budget_service, ai_service, restaurant_service
+from services import overpass_service, destination_service, budget_service, ai_service, restaurant_service, highlight_service
 from utils.validators import require_fields, parse_int, parse_float
 
 logger = logging.getLogger(__name__)
@@ -13,9 +13,9 @@ trip_bp = Blueprint("trip", __name__)
 @trip_bp.route("/api/plan-trip", methods=["POST"])
 def plan_trip():
     """Orchestrates the full planning flow in one call: geocode both points,
-    fetch route, destination details, hotels, restaurants, weather, budget
-    and an AI itinerary — so the frontend can render everything from a single
-    search action."""
+    fetch route, destination details, hotels, restaurants, highlights,
+    weather, budget and an AI itinerary — so the frontend can render
+    everything from a single search action."""
     data = request.get_json(silent=True) or {}
     require_fields(data, ["origin", "destination"])
 
@@ -57,6 +57,17 @@ def plan_trip():
         logger.error("restaurant_service get_restaurants_with_fallback failed: %s", e)
         restaurants = []
 
+    # Same pattern as restaurants: highlight_service already handles live-API
+    # failure and sparse results internally; this outer try/except is the last
+    # safety net so a highlights problem can never break the whole trip plan.
+    try:
+        highlights = highlight_service.get_highlight_details(
+            data["destination"], dest_geo["lat"], dest_geo["lon"]
+        )["highlights"]
+    except Exception as e:
+        logger.error("highlight_service get_highlight_details failed: %s", e)
+        highlights = []
+
     try:
         weather = weather_service.get_weather(dest_geo["lat"], dest_geo["lon"])
     except Exception as e:
@@ -78,6 +89,7 @@ def plan_trip():
         "attractions": attractions[:12],
         "hotels": hotels[:10],
         "restaurants": restaurants[:10],
+        "highlights": highlights[:12],
         "weather": weather,
         "budget": budget_breakdown,
         "userBudget": user_budget,
