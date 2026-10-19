@@ -170,3 +170,24 @@ def get_nearby_highlights(ref_lat, ref_lon, radius_km=10):
 
     nearby.sort(key=lambda r: r["distanceKm"])
     return nearby
+
+
+def get_all_tourist_spots():
+    """Every curated tourist spot that has coordinates, as plain dicts, each
+    with a 'tags' list built from the Characteristics column. Used by the
+    along-the-route (corridor) search, which needs the whole flat file rather
+    than the spots near one point.
+    """
+    if _tourist_spots_df is None:
+        return []
+
+    spots = []
+    for r in _tourist_spots_df.to_dict(orient="records"):
+        lat, lon = r.get("Latitude"), r.get("Longitude")
+        if pd.isna(lat) or pd.isna(lon):
+            continue
+        r["tags"] = [
+            t.strip() for t in str(r.get("Characteristics", "")).split(",") if t.strip()
+        ]
+        spots.append(r)
+    return spots
