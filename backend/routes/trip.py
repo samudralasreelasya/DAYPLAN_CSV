@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 
 from services import geocoding_service, osrm_service, weather_service
 from services import overpass_service, destination_service, budget_service, ai_service, restaurant_service, highlight_service
+from services import corridor_service
 from utils.validators import require_fields, parse_int, parse_float
 
 logger = logging.getLogger(__name__)
@@ -74,6 +75,15 @@ def plan_trip():
         logger.error("highlight_service get_highlight_details failed: %s", e)
         highlights = []
 
+    # Spots lying ALONG the driving route (not at the destination). Uses only
+    # the local CSV, so it still works when Overpass is down. Own try/except for
+    # the same reason as above: this extra can never break the trip plan.
+    try:
+        route_highlights = corridor_service.get_route_highlights(route)
+    except Exception as e:
+        logger.error("corridor_service get_route_highlights failed: %s", e)
+        route_highlights = []
+
     try:
         weather = weather_service.get_weather(dest_geo["lat"], dest_geo["lon"])
     except Exception as e:
@@ -97,6 +107,7 @@ def plan_trip():
         "hotelsStatus": hotels_status,
         "restaurants": restaurants[:10],
         "highlights": highlights[:12],
+        "routeHighlights": route_highlights,
         "weather": weather,
         "budget": budget_breakdown,
         "userBudget": user_budget,
