@@ -8,7 +8,7 @@ export default function Hotels() {
   const { tripData } = useTrip();
   if (!tripData) return <EmptyTripState />;
 
-  const { hotels } = tripData;
+  const { hotels, hotelsStatus } = tripData;
 
   return (
     <section className="px-5 pb-16">
@@ -35,6 +35,14 @@ export default function Hotels() {
               </Card>
             ))}
           </div>
+        ) : hotelsStatus === "unavailable" ? (
+          // The live lookup failed (hotels have no offline backup data), so say
+          // that instead of implying the destination has no hotels.
+          <p className="text-slate-500">
+            Live hotel data is temporarily unavailable because the OpenStreetMap
+            (Overpass) server is busy. Please try again in a few minutes, or check
+            a booking site for stays near your destination.
+          </p>
         ) : (
           <p className="text-slate-500">No hotels found nearby. Try a different destination.</p>
         )}

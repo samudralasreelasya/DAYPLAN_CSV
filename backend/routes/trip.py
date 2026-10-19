@@ -39,11 +39,17 @@ def plan_trip():
         data["destination"], dest_geo["lat"], dest_geo["lon"]
     )
 
+    # "ok" vs "unavailable" lets the frontend tell "this place has no hotels in
+    # the data" apart from "the live hotel lookup failed" - hotels are the one
+    # category with no CSV fallback, so a failure would otherwise look like an
+    # empty destination.
+    hotels_status = "ok"
     try:
         hotels = overpass_service.get_hotels(dest_geo["lat"], dest_geo["lon"])
     except Exception as e:
         logger.error("Overpass get_hotels failed: %s", e)
         hotels = []
+        hotels_status = "unavailable"
 
     # Uses restaurant_service (live Overpass + curated CSV fallback), not a
     # bare overpass_service call - this is what actually makes the veg/non-veg
@@ -88,6 +94,7 @@ def plan_trip():
         "route": route,
         "attractions": attractions[:12],
         "hotels": hotels[:10],
+        "hotelsStatus": hotels_status,
         "restaurants": restaurants[:10],
         "highlights": highlights[:12],
         "weather": weather,
