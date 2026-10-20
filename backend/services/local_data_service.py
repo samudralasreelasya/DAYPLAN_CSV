@@ -16,6 +16,11 @@ _citywise_restaurants_cache = {} # e.g. {"hyderabad": DataFrame}  (restaurants)
 _tourist_spots_df = None
 _famous_places_df = None
 
+# Tourist_Spots.csv also contains hotels, restaurants and cafes. They are not
+# sightseeing "highlights", so any spot carrying one of these tags is left out
+# of the highlights features (destination highlights and along-the-route).
+EXCLUDED_TAGS = {"hotel", "hospitality", "restaurant", "restaurants", "cafe", "cuisine"}
+
 
 def load_all():
     """Call once from app.py at startup."""
@@ -166,6 +171,8 @@ def get_nearby_highlights(ref_lat, ref_lon, radius_km=10):
             r["tags"] = [
                 t.strip() for t in str(r.get("Characteristics", "")).split(",") if t.strip()
             ]
+            if EXCLUDED_TAGS & set(r["tags"]):
+                continue            # a hotel / restaurant / cafe, not a sight
             nearby.append(r)
 
     nearby.sort(key=lambda r: r["distanceKm"])

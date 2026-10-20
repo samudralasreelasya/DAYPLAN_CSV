@@ -20,9 +20,10 @@ DEFAULT_SKIP_ENDS_KM = 10   # spots this close to the start or end are not "on t
 MAX_PER_STRETCH = 2         # a big city must not fill the whole list
 SAME_PLACE_KM = 0.25        # two spots this close are treated as the same place
 
-# Tourist_Spots.csv also contains hotels, restaurants and cafes. They are not
-# places to stop and see, so a spot carrying any of these tags is left out.
-EXCLUDED_TAGS = {"hotel", "hospitality", "restaurant", "restaurants", "cafe", "cuisine"}
+# Hotels, restaurants and cafes in Tourist_Spots.csv are not places to stop and
+# see. One shared rule (in local_data_service) keeps this and the destination
+# highlights consistent.
+EXCLUDED_TAGS = local_data_service.EXCLUDED_TAGS
 
 
 def _live_spots(coordinates, width_km):
