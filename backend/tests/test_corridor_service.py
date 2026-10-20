@@ -6,7 +6,7 @@ The route is a straight line north along longitude 78 from latitude 10 to 20
 import pandas as pd
 import pytest
 
-from services import corridor_service, local_data_service
+from services import corridor_service, local_data_service, overpass_service
 
 ROUTE = {"geometry": {"coordinates": [[78.0, 10.0], [78.0, 20.0]]}}
 KM_PER_DEG_LON = 111.0  # roughly, near the equator-ish latitudes used here
@@ -16,6 +16,12 @@ def spot(name, lat, east_km=0.0):
     """A curated spot `east_km` east of the road at the given latitude."""
     return {"Name": name, "Latitude": lat, "Longitude": 78.0 + east_km / KM_PER_DEG_LON,
             "tags": ["scenic"]}
+
+
+@pytest.fixture(autouse=True)
+def no_live_spots(monkeypatch):
+    """By default Overpass returns nothing, so these tests only see curated spots."""
+    monkeypatch.setattr(overpass_service, "get_route_places", lambda *a, **k: [])
 
 
 @pytest.fixture
@@ -122,3 +128,82 @@ def test_all_tourist_spots_skips_rows_without_coordinates_and_builds_tags(monkey
     spots = local_data_service.get_all_tourist_spots()
     assert [s["Name"] for s in spots] == ["Good"]
     assert spots[0]["tags"] == ["scenic", "tea"]
+
+
+# --- live (Overpass) spots ---------------------------------------------------
+
+@pytest.fixture
+def with_live(monkeypatch):
+    def install(places):
+        monkeypatch.setattr(overpass_service, "get_route_places", lambda *a, **k: list(places))
+    return install
+
+
+def live(name, lat, east_km=0.0, tag="viewpoint"):
+    return {"name": name, "tags": [tag], "lat": lat, "lon": 78.0 + east_km / KM_PER_DEG_LON}
+
+
+def test_live_spot_inside_the_corridor_is_kept_and_labelled(with_spots, with_live):
+    with_spots([])
+    with_live([live("Hill View", 15.0, east_km=2)])
+    result = corridor_service.get_route_highlights(ROUTE)
+    assert names(result) == ["Hill View"]
+    assert result[0]["source"] == "live"
+
+
+def test_curated_spots_are_labelled_curated(with_spots):
+    with_spots([spot("Fort", 15.0, east_km=1)])
+    assert corridor_service.get_route_highlights(ROUTE)[0]["source"] == "curated"
+
+
+def test_live_spot_outside_corridor_or_at_the_ends_is_dropped(with_spots, with_live):
+    with_spots([])
+    with_live([live("TooFar", 15.0, east_km=9), live("AtStart", 10.05), live("Fine", 16.0, east_km=1)])
+    assert names(corridor_service.get_route_highlights(ROUTE)) == ["Fine"]
+
+
+def test_live_and_curated_are_blended(with_spots, with_live):
+    with_spots([spot("Curated Fort", 12.0, east_km=1)])
+    with_live([live("Live Falls", 17.0, east_km=1, tag="waterfall")])
+    assert names(corridor_service.get_route_highlights(ROUTE)) == ["Curated Fort", "Live Falls"]
+
+
+def test_same_name_live_spot_is_not_added_twice(with_spots, with_live):
+    with_spots([spot("Golconda Fort", 15.0, east_km=1)])
+    with_live([live("  golconda   FORT ", 15.3, east_km=1)])
+    result = corridor_service.get_route_highlights(ROUTE)
+    assert len(result) == 1 and result[0]["source"] == "curated"
+
+
+def test_live_spot_on_the_same_spot_with_another_name_is_not_added_twice(with_spots, with_live):
+    with_spots([spot("Lalbagh", 15.0, east_km=1)])
+    with_live([live("Lal Bagh Botanical Garden", 15.0005, east_km=1)])   # ~55 m away
+    assert names(corridor_service.get_route_highlights(ROUTE)) == ["Lalbagh"]
+
+
+def test_nearby_but_different_live_spot_is_kept(with_spots, with_live):
+    with_spots([spot("Lalbagh", 15.0, east_km=1)])
+    with_live([live("Different Place", 15.02, east_km=1)])                # ~2 km away
+    assert len(corridor_service.get_route_highlights(ROUTE, limit=1000)) == 2
+
+
+def test_overpass_failure_falls_back_to_curated_spots(with_spots, monkeypatch):
+    with_spots([spot("Safe Fort", 15.0, east_km=1)])
+    def boom(*a, **k):
+        raise RuntimeError("Overpass down")
+    monkeypatch.setattr(overpass_service, "get_route_places", boom)
+    assert names(corridor_service.get_route_highlights(ROUTE)) == ["Safe Fort"]
+
+
+def test_curated_spot_wins_its_stretch_slot_over_a_closer_live_spot(with_spots, with_live):
+    with_spots([spot("Curated", 14.0, east_km=4)])
+    with_live([live("LiveRoadside", 14.1, east_km=0.2)])
+    assert names(corridor_service.get_route_highlights(ROUTE, limit=1)) == ["Curated"]
+
+
+def test_many_live_spots_in_one_city_still_respect_the_per_stretch_cap(with_spots, with_live):
+    with_spots([])
+    with_live([live(f"CityPlace{i}", 12.0 + i * 0.01, east_km=1) for i in range(40)]
+              + [live("FarAway", 18.0, east_km=2)])
+    result = corridor_service.get_route_highlights(ROUTE, limit=2)
+    assert names(result)[-1] == "FarAway" and len(result) == 2

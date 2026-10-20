@@ -1,12 +1,15 @@
-"""Finds curated spots that lie ALONG a driving route ("on the way" highlights).
+"""Finds spots that lie ALONG a driving route ("on the way" highlights).
 
-Works purely from the local Tourist_Spots.csv, so it needs no live API call and
-keeps working when Overpass is down.
+Two sources, same resilience pattern as restaurants and highlights:
+  * live OpenStreetMap data from Overpass (broad coverage, can be down), and
+  * the curated Tourist_Spots.csv (small, always available).
+Both are merged and put through the same corridor / spread rules. If Overpass
+fails, the curated spots alone are used, so the feature never breaks.
 """
 import logging
 
-from services import local_data_service
-from utils.geo import RouteIndex
+from services import local_data_service, overpass_service
+from utils.geo import RouteIndex, haversine_km
 
 logger = logging.getLogger(__name__)
 
@@ -15,10 +18,35 @@ DEFAULT_LIMIT = 15          # most stops to return
 DEFAULT_SKIP_ENDS_KM = 10   # spots this close to the start or end are not "on the way";
                             # the destination ones already live on the Highlights tab
 MAX_PER_STRETCH = 2         # a big city must not fill the whole list
+SAME_PLACE_KM = 0.25        # two spots this close are treated as the same place
 
 # Tourist_Spots.csv also contains hotels, restaurants and cafes. They are not
 # places to stop and see, so a spot carrying any of these tags is left out.
 EXCLUDED_TAGS = {"hotel", "hospitality", "restaurant", "restaurants", "cafe", "cuisine"}
+
+
+def _live_spots(coordinates, width_km):
+    """Live OSM places along the route, or [] if Overpass is unavailable."""
+    try:
+        return overpass_service.get_route_places(coordinates, width_km=width_km)
+    except Exception as e:
+        logger.warning("Live route search unavailable, using curated spots only: %s", e)
+        return []
+
+
+def _same_name(a, b):
+    return " ".join(str(a).lower().split()) == " ".join(str(b).lower().split())
+
+
+def _is_duplicate(name, lat, lon, candidates):
+    """True if a candidate with the same name, or sitting on the same spot, exists."""
+    for c in candidates:
+        if _same_name(c["name"], name):
+            return True
+        if (abs(c["lat"] - lat) < 0.003 and abs(c["lon"] - lon) < 0.003
+                and haversine_km(c["lat"], c["lon"], lat, lon) < SAME_PLACE_KM):
+            return True
+    return False
 
 
 def get_route_highlights(route, width_km=DEFAULT_WIDTH_KM, limit=DEFAULT_LIMIT,
@@ -26,7 +54,8 @@ def get_route_highlights(route, width_km=DEFAULT_WIDTH_KM, limit=DEFAULT_LIMIT,
     """route: the dict from osrm_service.get_route (needs geometry.coordinates).
 
     Returns a list in travel order (nearest the start first), each item:
-    name, tags, lat, lon, offRouteKm (gap to the road), alongKm (km from start).
+    name, tags, lat, lon, offRouteKm (gap to the road), alongKm (km from start),
+    source ("curated" or "live").
     """
     if not route:
         return []
@@ -36,29 +65,38 @@ def get_route_highlights(route, width_km=DEFAULT_WIDTH_KM, limit=DEFAULT_LIMIT,
 
     index = RouteIndex(coordinates)
 
-    # Step 1: every sightseeing spot inside the corridor.
+    def make_candidate(name, tags, lat, lon, source):
+        """A candidate if the spot is inside the corridor and not at either end."""
+        off_km, along_km = index.locate(lat, lon)
+        if off_km > width_km:
+            return None
+        if along_km < skip_ends_km or along_km > index.total_km - skip_ends_km:
+            return None
+        return {
+            "name": name, "tags": tags, "lat": lat, "lon": lon, "source": source,
+            "offRouteKm": round(off_km, 1), "alongKm": round(along_km, 1),
+        }
+
+    # Step 1: every sightseeing spot inside the corridor. Curated spots go in
+    # first, so when a live spot is the same place it is the live copy that is dropped.
     candidates = []
     for spot in local_data_service.get_all_tourist_spots():
         if EXCLUDED_TAGS & set(spot["tags"]):
             continue
-        off_km, along_km = index.locate(spot["Latitude"], spot["Longitude"])
-        if off_km > width_km:
-            continue
-        if along_km < skip_ends_km or along_km > index.total_km - skip_ends_km:
-            continue
-        candidates.append({
-            "name": spot["Name"],
-            "tags": spot["tags"],
-            "lat": spot["Latitude"],
-            "lon": spot["Longitude"],
-            "offRouteKm": round(off_km, 1),
-            "alongKm": round(along_km, 1),
-        })
+        c = make_candidate(spot["Name"], spot["tags"], spot["Latitude"], spot["Longitude"], "curated")
+        if c:
+            candidates.append(c)
+
+    for spot in _live_spots(coordinates, width_km):
+        c = make_candidate(spot["name"], spot["tags"], spot["lat"], spot["lon"], "live")
+        if c and not _is_duplicate(c["name"], c["lat"], c["lon"], candidates):
+            candidates.append(c)
 
     # Step 2: spread the picks over the whole journey. A big city can have
     # dozens of spots; without a rule they would fill every slot. Cut the route
     # into `limit` equal stretches and keep at most MAX_PER_STRETCH spots per
-    # stretch, preferring the ones closest to the road.
+    # stretch. Inside a stretch curated spots come first (they are hand-checked),
+    # then the closest to the road.
     stretch_km = index.total_km / limit
     by_stretch = {}
     for c in candidates:
@@ -66,7 +104,7 @@ def get_route_highlights(route, width_km=DEFAULT_WIDTH_KM, limit=DEFAULT_LIMIT,
 
     ranked = []   # (rank inside its stretch, gap to road, spot)
     for spots in by_stretch.values():
-        spots.sort(key=lambda c: c["offRouteKm"])
+        spots.sort(key=lambda c: (c["source"] != "curated", c["offRouteKm"]))
         for rank, c in enumerate(spots[:MAX_PER_STRETCH]):
             ranked.append((rank, c["offRouteKm"], c))
 
