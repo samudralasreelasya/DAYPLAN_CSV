@@ -23,8 +23,8 @@ export default function RouteHighlights() {
           title="Stops Along Your Route"
           subtitle={
             route
-              ? `Curated spots within 5 km of the road, ${origin?.name ?? "start"} to ${destination?.name ?? "destination"} (${route.distanceKm} km)`
-              : "Curated spots along the driving route"
+              ? `Places within 5 km of the road, ${origin?.name ?? "start"} to ${destination?.name ?? "destination"} (${route.distanceKm} km)`
+              : "Places along the driving route"
           }
         />
 
@@ -45,6 +45,9 @@ export default function RouteHighlights() {
                   <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400">
                     <span className="flex items-center gap-1">
                       <FiMapPin /> {s.alongKm} km from start
+                    </span>
+                    <span className="font-medium text-primary-600">
+                      {s.source === "curated" ? "Curated pick" : "From OpenStreetMap"}
                     </span>
                     <span>
                       {s.offRouteKm < 1 ? "right on the road" : `${s.offRouteKm} km off the road`}
@@ -70,12 +73,13 @@ export default function RouteHighlights() {
         ) : (
           <div className="rounded-xl border border-dashed border-slate-300 p-8 text-center dark:border-slate-700">
             <p className="font-medium">
-              {route ? "No curated stops found along this route." : "No driving route was available for this trip."}
+              {route ? "No stops found along this route." : "No driving route was available for this trip."}
             </p>
             {route && (
               <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                Our curated data covers 13 cities, so roads that pass through small towns
-                may have nothing listed. Check the Highlights tab for spots at your destination.
+                The live map data was unavailable or had nothing within 5 km of this road, and
+                our curated spots cover only 13 cities. Check the Highlights tab for spots at
+                your destination.
               </p>
             )}
           </div>
