@@ -20,6 +20,12 @@ COOLDOWN_SECONDS = 120
 _down_until = 0.0           # time.monotonic() value until which Overpass is skipped
 
 
+class OverpassRuntimeError(requests.RequestException):
+    """Overpass accepted the query but gave up on it (out of time or memory).
+    It reports this as HTTP 200 with an empty list and a "remark", which would
+    otherwise look exactly like "there is nothing here"."""
+
+
 def _is_outage(exc):
     """Decide whether a failure means 'Overpass is struggling' (trip the
     cooldown) or 'our own query was wrong' (do not)."""
@@ -45,11 +51,17 @@ def _query_overpass(query, timeout=REQUEST_TIMEOUT, trip_cooldown=True):
     try:
         resp = requests.post(url, data={"data": query}, headers=headers, timeout=timeout)
         resp.raise_for_status()
-        return resp.json()
+        data = resp.json()
+        remark = data.get("remark", "") if isinstance(data, dict) else ""
+        if "runtime error" in remark:
+            raise OverpassRuntimeError(remark)
+        return data
     except requests.RequestException as e:
         # Log the REAL reason; the error raised below is deliberately generic.
         status = getattr(getattr(e, "response", None), "status_code", None)
         reason = f"HTTP {status}" if status else type(e).__name__
+        if isinstance(e, OverpassRuntimeError):
+            reason = f"Overpass gave up: {str(e)[:100]}"
         if _is_outage(e) and trip_cooldown:
             _down_until = time.monotonic() + COOLDOWN_SECONDS
             logger.warning("Overpass request failed (%s); skipping Overpass for %ss", reason, COOLDOWN_SECONDS)
