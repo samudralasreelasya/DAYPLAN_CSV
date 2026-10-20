@@ -14,6 +14,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
+// A numbered round badge, so marker 3 on the map is "3" in the On the Way list.
+function stopIcon(number) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font:600 12px sans-serif;">${number}</div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
+    popupAnchor: [0, -13],
+  });
+}
+
 function FitBounds({ positions }) {
   const map = useMap();
   useEffect(() => {
@@ -26,7 +37,8 @@ export default function MapPage() {
   const { tripData } = useTrip();
   if (!tripData) return <EmptyTripState />;
 
-  const { origin, destination, route } = tripData;
+  const { origin, destination, route, routeHighlights } = tripData;
+  const stops = Array.isArray(routeHighlights) ? routeHighlights : [];
   const originPos = [origin.lat, origin.lon];
   const destPos = [destination.lat, destination.lon];
 
@@ -53,10 +65,33 @@ export default function MapPage() {
                 <Popup>Destination: {destination.name}</Popup>
               </Marker>
               <Polyline positions={routeCoords} pathOptions={{ color: "#2563eb", weight: 4 }} />
+              {stops.map((stop, i) => (
+                <Marker key={`${stop.name}-${i}`} position={[stop.lat, stop.lon]} icon={stopIcon(i + 1)}>
+                  <Popup>
+                    <strong>{stop.name}</strong>
+                    <br />
+                    {stop.alongKm} km from start
+                    {stop.offRouteKm >= 1 ? ` · ${stop.offRouteKm} km off the road` : ""}
+                    {Array.isArray(stop.tags) && stop.tags.length > 0 && (
+                      <>
+                        <br />
+                        {stop.tags.slice(0, 3).join(", ")}
+                      </>
+                    )}
+                  </Popup>
+                </Marker>
+              ))}
               <FitBounds positions={routeCoords} />
             </MapContainer>
           </div>
         </Card>
+
+        {stops.length > 0 && (
+          <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+            Numbered green markers are stops along your route, in travel order. Click one for details,
+            or see the full list on the On the Way tab.
+          </p>
+        )}
 
         <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
           <Card>
