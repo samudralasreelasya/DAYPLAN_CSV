@@ -13,7 +13,7 @@ local CSV datasets back them up, so a slow or dead public server does not empty 
 | Destination | Tourist attractions near the destination, nearest first (live + curated) |
 | Highlights | Hidden / authentic spots, with hotels and restaurants filtered out of the list |
 | **On the Way** | Stops along the driving route (see "Along-the-route stops"), shown as a numbered timeline **and** as numbered markers on the existing Map tab |
-| Hotels | Live OpenStreetMap hotels. An honest "unavailable" message if the live lookup failed |
+| Hotels | Live OpenStreetMap hotels, with curated CSV hotels as a fallback. `hotelsStatus` is `ok`, `fallback` or `unavailable` |
 | Restaurants | Live + curated, with a veg / non-veg / both filter |
 | Weather, Budget, Itinerary | Open-Meteo forecast, a budget breakdown, a deterministic day-by-day plan |
 | Accounts | Register / login (JWT), saved trips and favourites |
@@ -32,7 +32,7 @@ Every external call is independent. A failure degrades one section, never the wh
 | Restaurants | Overpass | curated restaurants (143 rows) | empty list |
 | Highlights | Overpass | curated spots | empty list |
 | Along the route | Overpass (route search) | curated spots near the route | `[]` plus an honest empty state |
-| Hotels | Overpass | **none yet** (dataset in progress) | `hotelsStatus: "unavailable"` |
+| Hotels | Overpass | `Hotels.csv` (173 hotels, 13 cities) | `hotelsStatus: "unavailable"` |
 
 Rules that apply across the services:
 
@@ -155,7 +155,7 @@ Delete `route.json` afterwards and never `git add` it.
 - 459 curated tourist spots across 13 Indian cities, 30 famous global landmarks.
 - 143 curated restaurant / hidden-spot rows, of which 69 (48%) are geocoded. Ungeocoded rows
   cannot be placed by distance.
-- Hotel dataset: **in progress**. Only sourced rows with a source URL will be added.
+- Hotel dataset: `backend/data/dataset2/Hotels.csv` has 173 hotels across 13 cities. Every row has a source URL. 65 rows have coordinates; the rest are listed without a map position or distance.
 
 ### Data-integrity lesson: pandas and the string "NA"
 
@@ -170,7 +170,7 @@ purpose (no diet tag), and `jsonify()` then writes the invalid JSON token `NaN`,
   route search has so far been tested only against simulated servers, not a healthy real one.
 - **Sparse corridor data.** Without live data, a route may have few curated stops (Hyderabad to
   Munnar gave 1).
-- **No offline hotel fallback yet.** Hotels depend entirely on live data until the dataset is added.
+- **Hotel fallback is partial.** 108 of the 173 CSV hotels have no coordinates (the geocoder could not place them), so they show without a distance. Destinations outside the 13 covered cities have no offline hotels.
 - Transport options are a heuristic, and the itinerary is generated deterministically.
 
 ## Deployment
