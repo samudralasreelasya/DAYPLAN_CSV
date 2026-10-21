@@ -38,7 +38,7 @@ export default function Hotels() {
                     </span>
                   ) : null}
                 </div>
-                {h.category ? (
+                {h.category && h.category !== "unclassified" ? (
                   <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">{h.category}</p>
                 ) : null}
                 <p className="mt-2 flex items-center gap-1 text-xs text-slate-400">

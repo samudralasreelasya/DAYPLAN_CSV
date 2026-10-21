@@ -101,7 +101,7 @@ def plan_trip():
         "destination": dest_geo,
         "route": route,
         "attractions": attractions[:12],
-        "hotels": hotels[:10],
+        "hotels": hotels[:15],
         "hotelsStatus": hotels_status,
         "restaurants": restaurants[:10],
         "highlights": highlights[:12],
