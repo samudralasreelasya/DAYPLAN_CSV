@@ -25,6 +25,7 @@ def client(monkeypatch):
     monkeypatch.setattr(trip_module.budget_service, "estimate_budget", lambda *a, **k: {})
     monkeypatch.setattr(trip_module.ai_service, "generate_itinerary",
                         lambda *a, **k: {"itinerary": [], "packingSuggestions": []})
+    monkeypatch.setattr(trip_module.hotel_service, "_load_csv", lambda: ())
 
     app = Flask(__name__)
     app.register_blueprint(trip_bp)

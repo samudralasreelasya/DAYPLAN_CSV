@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 
 from services import geocoding_service, osrm_service, weather_service
 from services import overpass_service, destination_service, budget_service, ai_service, restaurant_service, highlight_service
-from services import corridor_service
+from services import corridor_service, hotel_service
 from utils.validators import require_fields, parse_int, parse_float
 
 logger = logging.getLogger(__name__)
@@ -40,17 +40,15 @@ def plan_trip():
         data["destination"], dest_geo["lat"], dest_geo["lon"]
     )
 
-    # "ok" vs "unavailable" lets the frontend tell "this place has no hotels in
-    # the data" apart from "the live hotel lookup failed" - hotels are the one
-    # category with no CSV fallback, so a failure would otherwise look like an
-    # empty destination.
-    hotels_status = "ok"
+    # Live Overpass first, then curated CSV hotels. Status is "ok", "fallback"
+    # (live failed, CSV used) or "unavailable" (live failed and no CSV rows).
     try:
-        hotels = overpass_service.get_hotels(dest_geo["lat"], dest_geo["lon"])
+        hotels, hotels_status = hotel_service.get_hotels_with_fallback(
+            data["destination"], dest_geo["lat"], dest_geo["lon"]
+        )
     except Exception as e:
-        logger.error("Overpass get_hotels failed: %s", e)
-        hotels = []
-        hotels_status = "unavailable"
+        logger.error("hotel_service get_hotels_with_fallback failed: %s", e)
+        hotels, hotels_status = [], "unavailable"
 
     # Uses restaurant_service (live Overpass + curated CSV fallback), not a
     # bare overpass_service call - this is what actually makes the veg/non-veg

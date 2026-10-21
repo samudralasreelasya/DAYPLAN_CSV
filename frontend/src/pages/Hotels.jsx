@@ -1,4 +1,4 @@
-import { FiStar, FiMapPin, FiDollarSign } from "react-icons/fi";
+import { FiStar, FiMapPin, FiDollarSign, FiExternalLink } from "react-icons/fi";
 import { useTrip } from "../context/TripContext.jsx";
 import TripTabs from "../components/TripTabs.jsx";
 import EmptyTripState from "../components/EmptyTripState.jsx";
@@ -14,7 +14,17 @@ export default function Hotels() {
     <section className="px-5 pb-16">
       <TripTabs />
       <div className="mx-auto max-w-6xl">
-        <SectionHeading eyebrow="Stay" title="Nearby Hotels" subtitle="Sourced from OpenStreetMap's Overpass API" />
+        <SectionHeading
+          eyebrow="Stay"
+          title="Hotels"
+          subtitle="OpenStreetMap live data, backed by a curated hotel list"
+        />
+
+        {hotelsStatus === "fallback" && (
+          <p className="mb-4 text-sm text-slate-500">
+            Live hotel data is busy right now, so these come from our curated list instead.
+          </p>
+        )}
 
         {hotels?.length ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -28,18 +38,32 @@ export default function Hotels() {
                     </span>
                   ) : null}
                 </div>
+                {h.category ? (
+                  <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">{h.category}</p>
+                ) : null}
                 <p className="mt-2 flex items-center gap-1 text-xs text-slate-400">
-                  <FiMapPin /> {h.distanceKm} km from center
+                  <FiMapPin />
+                  {h.distanceKm != null ? `${h.distanceKm} km from center` : h.area || "Location not pinned"}
+                  {h.distanceKm != null && h.area ? ` - ${h.area}` : ""}
                 </p>
+                {h.notes ? <p className="mt-2 text-xs text-slate-500">{h.notes}</p> : null}
                 <p className="mt-1 flex items-center gap-1 text-xs text-slate-400">
-                  <FiDollarSign /> Price varies â€” check booking sites for live rates
+                  <FiDollarSign /> Price varies - check booking sites for live rates
                 </p>
+                {h.sourceUrl ? (
+                  <a
+                    href={h.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-xs text-sky-500"
+                  >
+                    <FiExternalLink /> Source
+                  </a>
+                ) : null}
               </Card>
             ))}
           </div>
         ) : hotelsStatus === "unavailable" ? (
-          // The live lookup failed (hotels have no offline backup data), so say
-          // that instead of implying the destination has no hotels.
           <p className="text-slate-500">
             Live hotel data is temporarily unavailable because the OpenStreetMap
             (Overpass) server is busy. Please try again in a few minutes, or check
