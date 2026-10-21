@@ -1,0 +1,151 @@
+HotelID,Name,City,Area,Category,Notes,SourceURL,Latitude,Longitude,GeoPrecision
+H001,Monarch Hotel,bangalore,"Shanthala Nagar, Brigade Road",mid-range,City-centre hotel near MG Road with a 24-hour coffee shop.,https://www.worldtravelguide.net/guides/asia/india/bengaluru-bangalore/hotels,12.972761,77.607376,name_match
+H002,St Mark's Hotel,bangalore,St Marks Road,mid-range,"Downtown hotel with marble lobby, rooftop terrace, fine-dining restaurant and gym.",https://www.worldtravelguide.net/guides/asia/india/bengaluru-bangalore/hotels,12.969222,77.600163,name_match
+H003,Hotel Ajantha,bangalore,Mahatma Gandhi Road,budget,Central budget option in the MG Road shopping area.,https://www.worldtravelguide.net/guides/asia/india/bengaluru-bangalore/hotels,,,
+H004,Hotel Empire International,bangalore,Church Street,budget,Budget hotel near MG Road shops with in-house restaurant.,https://www.worldtravelguide.net/guides/asia/india/bengaluru-bangalore/hotels,,,
+H005,Conrad Bengaluru,bangalore,,unclassified,Listed as a hotel in the project's Tourist_Spots.csv,Tourist_Spots.csv (project dataset),12.975248,77.620731,dataset
+H006,Radisson Hotel Bengaluru,bangalore,,unclassified,Listed as a hotel in the project's Tourist_Spots.csv,Tourist_Spots.csv (project dataset),12.976193,77.619401,dataset
+H007,Taj MG Road,bangalore,,unclassified,Listed as a hotel in the project's Tourist_Spots.csv,Tourist_Spots.csv (project dataset),12.973266,77.619601,dataset
+H008,The Leela Palace Bengaluru,bangalore,,unclassified,Listed as a hotel in the project's Tourist_Spots.csv,Tourist_Spots.csv (project dataset),12.960263,77.648405,dataset
+H009,The Oberoi Bengaluru,bangalore,,unclassified,Listed as a hotel in the project's Tourist_Spots.csv,Tourist_Spots.csv (project dataset),12.973682,77.618226,dataset
+H010,The Park Bangalore,bangalore,,unclassified,Listed as a hotel in the project's Tourist_Spots.csv,Tourist_Spots.csv (project dataset),12.974058,77.619486,dataset
+H011,Taj Chandigarh,chandigarh,Sector 17-A,luxury,"Has a health spa, swimming pool and four dining options.",https://12go.com/en/india/chandigarh/stay,30.745485,76.785202,name_match
+H012,The Oberoi Sukhvilas Resort & Spa,chandigarh,Sector 18-D,luxury,Luxury resort on 25 acres of Siswan Forest Range; Rajput-Mughal design.,https://12go.com/en/india/chandigarh/stay,,,
+H013,Hotel AB's,chandigarh,Sector 17-C,mid-range,Children's play area and North Indian restaurant.,https://12go.com/en/india/chandigarh/stay,,,
+H014,Hotel Grand View,chandigarh,Sector 22-D,mid-range,Close to the International Dolls Museum; housekeeping and power backup.,https://12go.com/en/india/chandigarh/stay,30.732156,76.764271,name_match
+H015,Hotel Sunbeam,chandigarh,Sector 22-B,mid-range,Free airport shuttle and nightly live entertainment at its bar.,https://12go.com/en/india/chandigarh/stay,30.733740,76.778722,name_match
+H016,Hotel Kailash Palace,chandigarh,Sector 22-C,budget,"Near airport, railway station and bus stand; on-call doctor.",https://12go.com/en/india/chandigarh/stay,,,
+H017,Hotel Punjab Palace,chandigarh,Sector 22-B,budget,"Offers free parking, laundry and dry cleaning.",https://12go.com/en/india/chandigarh/stay,,,
+H018,Hotel Satyadeep,chandigarh,Sector 22-B,budget,Described as safe for solo women travellers.,https://12go.com/en/india/chandigarh/stay,30.731916,76.776404,name_match
+H019,Park Hyatt Chennai,chennai,Next to the Governor's Residence,luxury,Listed 5-star; rooftop infinity pool and spa.,https://www.frommers.com/destinations/chennai/hotels/overview,13.010586,80.223293,name_match
+H020,Trident Chennai,chennai,Near Guindy,luxury,"Listed 5-star; outdoor pool, spa, 24-hour room service.",https://www.frommers.com/destinations/chennai/hotels/overview,13.124576,80.201478,name_match
+H021,Lemon Tree Hotel Chennai,chennai,Central Chennai,mid-range,Listed 4-star; 24-hour restaurant and fitness center.,https://www.frommers.com/destinations/chennai/hotels/overview,13.011181,80.224693,name_match
+H022,MGM Eastwoods,chennai,,mid-range,Listed 4-star; daily buffet breakfast and outdoor pool.,https://www.frommers.com/destinations/chennai/hotels/overview,,,
+H023,Savera Hotel,chennai,,mid-range,Listed 4-star; about one mile from Marina Beach; spa and pool.,https://www.frommers.com/destinations/chennai/hotels/overview,13.046003,80.261264,name_match
+H024,Blossoms Hotel,chennai,,budget,Listed 2-star; free WiFi and free private parking.,https://hotel.routard.com/budget/city/in/chennai.html?aid=304142,,,
+H025,Green Palace Inn,chennai,T Nagar,budget,"Listed 2-star hotel in T Nagar, Chennai.",https://hotel.routard.com/budget/city/in/chennai.html?aid=304142,,,
+H026,Taj Wellington Mews,chennai,,unclassified,Listed as a hotel in the project's Tourist_Spots.csv,Tourist_Spots.csv (project dataset),12.991050,80.249890,dataset
+H027,Radisson Blu,coimbatore,Peelamedu,luxury,Listed 5 star; rooftop infinity pool and Great Kabab Factory restaurant.,https://traveltriangle.com/blog/best-hotels-in-coimbatore/,11.021666,76.991987,name_match
+H028,Vivanta by Taj - Surya,coimbatore,"Race Course, Gopalapuram",luxury,Listed 5 star; about 1 km from railway and bus terminals.,https://traveltriangle.com/blog/best-hotels-in-coimbatore/,,,
+H029,Aloft Coimbatore Singanallur,coimbatore,Singanallur,mid-range,Listed 4 Star; has Re:fuel by Aloft deli.,https://traveltriangle.com/blog/best-hotels-in-coimbatore/,11.014742,77.024248,name_match
+H030,Hotel Chenthur Park,coimbatore,SITRA,mid-range,Listed 3 Star; near Coimbatore Airport; described as eco-friendly.,https://traveltriangle.com/blog/best-hotels-in-coimbatore/,11.038121,77.038729,name_match
+H031,Hotel Vijay Elanza,coimbatore,Peelamedu,mid-range,Listed 4 Star; futuristic design; Global Barbeque restaurant.,https://traveltriangle.com/blog/best-hotels-in-coimbatore/,,,
+H032,Hotel Grand Palace,coimbatore,Gandhipuram,budget,Listed 2 Star.,https://www.adanione.com/india-hotels/budget-hotels-in-coimbatore,11.018795,76.962554,name_match
+H033,Hotel Nahar Manchester Inn,coimbatore,R. S. Puram,budget,Listed 2 Star.,https://www.adanione.com/india-hotels/budget-hotels-in-coimbatore,,,
+H034,Plaza Inn,coimbatore,Gopalapuram,budget,Listed 2 Star; free WiFi and parking.,https://www.adanione.com/india-hotels/budget-hotels-in-coimbatore,,,
+H035,The Claridges,delhi,Aurangzeb Road,luxury,Five-star heritage property with colonial architecture.,https://www.thegrandnewdelhi.com/blog/best-hotels-in-connaught-place-delhi,28.600569,77.216345,name_match
+H036,The Imperial,delhi,Janpath,luxury,Five-star; described as arguably Delhi's most famous heritage hotel.,https://www.thegrandnewdelhi.com/blog/best-hotels-in-connaught-place-delhi,28.633034,77.222669,name_match
+H037,Radisson Blu Connaught Place,delhi,Connaught Place,mid-range,Four-star property near the inner circle.,https://www.thegrandnewdelhi.com/blog/best-hotels-in-connaught-place-delhi,28.633966,77.217166,name_match
+H038,The Pllazio,delhi,Connaught Place,mid-range,Listed among established four-star properties.,https://www.thegrandnewdelhi.com/blog/best-hotels-in-connaught-place-delhi,,,
+H039,Hotel Hari Piorko,delhi,Paharganj,budget,Rooftop restaurant and lounge; labeled budget; 39 air-conditioned rooms.,https://www.oyster.com/india/hotels/hotel-hari-piorko/,28.640954,77.214153,name_match
+H040,Lhasa House,delhi,Majnu-ka-Tilla,budget,Simple rooms in a quiet location.,https://www.lonelyplanet.com/india/delhi/hotels?page=2,,,
+H041,Tsampa House,delhi,Majnu-ka-Tilla,budget,"Clean, hotel-quality rooms, a step above nearby budget guesthouses.",https://www.lonelyplanet.com/india/delhi/hotels?page=2,,,
+H042,The Park,delhi,,unclassified,Listed as four-star here; another source calls it five-star.,https://www.thegrandnewdelhi.com/blog/best-hotels-in-connaught-place-delhi,28.628919,77.216120,name_match
+H043,Vivanta by Taj,guwahati,"Khanapara, G S Road",luxury,"5-star on Guwahati-Shillong highway, surrounded by lush greenery.",https://traveltriangle.com/blog/hotels-in-guwahati/,,,
+H044,Hotel Rajmahal,guwahati,A.T. Road,mid-range,4-star pure vegetarian hotel.,https://traveltriangle.com/blog/hotels-in-guwahati/,,,
+H045,The Greenwood Guwahati,guwahati,GS Road,mid-range,"4-star; listed amenities include sauna, spa and outdoor pool.",https://www.holidify.com/hotel-collections/luxury-hotels-in-guwahati,,,
+H046,The Guwahati Address By Centre Point,guwahati,GS Road,mid-range,"4-star; near temples, zoos, museums and malls.",https://www.holidify.com/hotel-collections/luxury-hotels-in-guwahati,,,
+H047,Hotel Atithi,guwahati,"A.K. Azad Road, Paltan Bazar",budget,"Offers smart, stylish rooms.",https://traveltriangle.com/blog/hotels-in-guwahati/,26.178467,91.750959,name_match
+H048,Hotel Silk Route,guwahati,Panbazar,unclassified,Incorporates local art and culture into its design.,https://traveltriangle.com/blog/hotels-in-guwahati/,,,
+H049,Radisson Blu Hotel Guwahati,guwahati,"Gotanagar, NH 37",unclassified,Close to Deepor Beel and several Hindu temples.,https://traveltriangle.com/blog/hotels-in-guwahati/,26.141485,91.673595,name_match
+H050,The Contour Hotel,guwahati,"K.C. Sen Road, near Paltan Bazar",unclassified,Near the railway station; has a spa and gym.,https://traveltriangle.com/blog/hotels-in-guwahati/,,,
+H051,Taj Falaknuma Palace,hyderabad,Nampally,luxury,5-star resort in a restored 1894 palace above the city,https://www.holidify.com/hotel/taj-deccan-1222.html,17.330928,78.467262,name_match
+H052,Trident Hyderabad,hyderabad,HITEC City,luxury,5-star hotel in HITEC City,https://www.holidify.com/hotel/taj-deccan-1222.html,17.449823,78.378762,name_match
+H053,"Hotel Deccan Serai Grande, Gachibowli",hyderabad,Gachibowli,mid-range,4-star hotel in Gachibowli,https://www.holidify.com/hotel/taj-deccan-1222.html,,,
+H054,SKYLA Studios & Suites - Kondapur,hyderabad,Gachibowli,mid-range,4-star hotel in the Gachibowli area,https://www.holidify.com/hotel/taj-deccan-1222.html,,,
+H055,"The Vantage Inn, near US Consulate Gachibowli",hyderabad,Gachibowli,mid-range,"4-star hotel near the US Consulate, Gachibowli",https://www.holidify.com/hotel/taj-deccan-1222.html,,,
+H056,Asrani International Hotel,hyderabad,,budget,Listed among budget hotels in Hyderabad,https://www.tourmyindia.com/hotelsinindia/hyderabad.html,,,
+H057,Hotel Raj Classic,hyderabad,,budget,Listed among budget hotels in Hyderabad,https://www.tourmyindia.com/hotelsinindia/hyderabad.html,,,
+H058,Hotel Sai Prakash,hyderabad,,budget,Listed among budget hotels in Hyderabad,https://www.tourmyindia.com/hotelsinindia/hyderabad.html,,,
+H059,ITC Sonar,kolkata,JBS Haldane Avenue,luxury,Spans 6.5 hectares with large pool surrounded by rooms.,https://www.worldtravelguide.net/guides/asia/india/kolkata-calcutta/hotels,22.544904,88.397851,name_match
+H060,The Oberoi Grand,kolkata,Jawaharlal Nehru Road,luxury,"Victorian-era building, long one of the city's most historic hotels.",https://www.worldtravelguide.net/guides/asia/india/kolkata-calcutta/hotels,22.561444,88.351277,name_match
+H061,Hotel Lindsay,kolkata,Lindsay Street,mid-range,Rooftop restaurant offers good views over the city.,https://www.worldtravelguide.net/guides/asia/india/kolkata-calcutta/hotels,,,
+H062,Lytton Hotel,kolkata,Sudder Street,mid-range,Near the Indian Museum; all rooms air-conditioned.,https://www.worldtravelguide.net/guides/asia/india/kolkata-calcutta/hotels,22.558664,88.352078,name_match
+H063,The Astor,kolkata,Shakespeare Sarani,mid-range,"35 rooms and suites, close to Victoria Memorial and Race Course.",https://www.worldtravelguide.net/guides/asia/india/kolkata-calcutta/hotels,,,
+H064,Aauris,kolkata,Robinson Street,budget,Indoor pool and rooftop bar; areas named after colours.,https://www.worldtravelguide.net/guides/asia/india/kolkata-calcutta/hotels,,,
+H065,Fairlawn Hotel,kolkata,Sudder Street,budget,Small historic property with Raj-era memorabilia and old free-standing bathtubs.,https://www.worldtravelguide.net/guides/asia/india/kolkata-calcutta/hotels,22.558444,88.352665,name_match
+H066,Hotel Casa Fortuna,kolkata,A.J.C. Bose Road,budget,Within walking distance of shopping and entertainment districts.,https://www.worldtravelguide.net/guides/asia/india/kolkata-calcutta/hotels,,,
+H067,Manuallaya The Resort & Spa,manali,Chadiyari,luxury,"Five-star; rooms have private balconies, and there is an indoor pool.",https://www.letsbookhotel.com/en/india/manali/hotels-accommodation.aspx,,,
+H068,The Anantmaya Resort,manali,"Naggar Road, Prini",luxury,Five-star resort with a terrace and spa centre.,https://www.letsbookhotel.com/en/india/manali/hotels-accommodation.aspx,,,
+H069,Hotel Le Grand,manali,"The Mall Road, Rangri",mid-range,Three-star; sits behind the River Beas and has a fitness centre.,https://www.letsbookhotel.com/en/india/manali/hotels-accommodation.aspx,,,
+H070,Johnson Lodge & Spa,manali,Circuit House Road,mid-range,Three-star; set in a magnolia garden with snowcapped peak views.,https://www.letsbookhotel.com/en/india/manali/hotels-accommodation.aspx,,,
+H071,Snow Valley Resorts Manali,manali,Log Hut Area,mid-range,Four-star eco-friendly resort among pine trees and apple orchards.,https://www.letsbookhotel.com/en/india/manali/hotels-accommodation.aspx,,,
+H072,Flamingo Resort Manali,manali,Simsa,budget,Two-star; has a restaurant and free WiFi.,https://www.letsbookhotel.com/en/india/manali/hotels-accommodation.aspx,,,
+H073,Hotel Hadimba Palace,manali,Hadimba Devi Mandir Road,budget,Two-star; has a restaurant and free WiFi.,https://www.letsbookhotel.com/en/india/manali/hotels-accommodation.aspx,32.247132,77.184396,name_match
+H074,Tourist Hotel,manali,"Circuit House Road, Ward No. 2",budget,"One-star; about 1 km from The Mall, with a restaurant.",https://www.letsbookhotel.com/en/india/manali/hotels-accommodation.aspx,32.245607,77.190989,name_match
+H075,Abode,mumbai,Colaba,luxury,Boutique hotel behind Regal Cinema with colonial and art deco furnishings,https://www.worldtravelguide.net/guides/asia/india/mumbai-bombay/hotels,18.923723,72.832687,name_match
+H076,The Taj Mahal Palace & Tower,mumbai,Colaba,luxury,Historic 1903 landmark with Indo-Saracenic architecture at Apollo Bunder,https://www.worldtravelguide.net/guides/asia/india/mumbai-bombay/hotels,,,
+H077,Ascot,mumbai,Colaba,mid-range,Small hotel just off Colaba Causeway with modern rooms,https://www.worldtravelguide.net/guides/asia/india/mumbai-bombay/hotels,18.919151,72.829892,name_match
+H078,Hotel Bawa Continental,mumbai,Juhu,mid-range,"Resort-style hotel on Juhu Beach, some rooms face the Arabian Sea",https://www.worldtravelguide.net/guides/asia/india/mumbai-bombay/hotels,19.100636,72.827601,name_match
+H079,Residency Hotel,mumbai,Fort,mid-range,Business-oriented hotel in Fort with a cafe serving breakfast,https://www.worldtravelguide.net/guides/asia/india/mumbai-bombay/hotels,18.934975,72.833241,name_match
+H080,Bentley's Hotel,mumbai,Colaba,budget,Long-running budget favourite spread across several buildings,https://www.worldtravelguide.net/guides/asia/india/mumbai-bombay/hotels,,,
+H081,Hotel Oasis,mumbai,Fort,budget,Compact 30-room hotel near Victoria Terminus,https://www.worldtravelguide.net/guides/asia/india/mumbai-bombay/hotels,,,
+H082,Hotel Sanjary International,mumbai,Fort,budget,Listed under 2 Star Hotels in Fort,https://in.hotels.com/nh1706059-st2/two-star-hotels-in-fort-mumbai-india,,,
+H083,Broad Bean Resort & Spa,munnar,,luxury,Listed 5-star; near Pothamedu View Point and Mattupetty Dam; large swimming pool.,https://veenaworld.com/blog/5-star-hotels-in-munnar,,,
+H084,Parakkat Nature Resort,munnar,,luxury,"Listed 5-star; 12-acre landscape, pool, in-house spa, tea plantations.",https://veenaworld.com/blog/5-star-hotels-in-munnar,,,
+H085,Spring Dale Resort Munnar,munnar,Devikulam,budget,Listed under budget resorts; colonial-style building.,https://munnar.com/resorts/budget-resorts,10.067203,77.104726,name_match
+H086,Tu Casa Resorts Munnar,munnar,Pothamedu,budget,Listed under budget resorts; overlooks Munnar tea gardens.,https://munnar.com/resorts/budget-resorts,,,
+H087,Vue Dale Retreats Munnar,munnar,Chithirapuram,budget,"Listed under budget resorts; pool, restaurant, garden, mountain views.",https://munnar.com/resorts/budget-resorts,,,
+H088,Tall Trees Resort,munnar,,unclassified,Eco-friendly; airport shuttle; set among woods and cardamom plantations.,https://veenaworld.com/blog/12-best-munnar-resorts-that-will-suit-your-taste-pocket,,,
+H089,Tea Country Resort,munnar,,unclassified,All-suite villas and cottages; pet-friendly; wellness services.,https://veenaworld.com/blog/12-best-munnar-resorts-that-will-suit-your-taste-pocket,,,
+H090,Tea Valley Resort,munnar,Moolakadai,unclassified,Surrounded by tea plantations; close to Rose Garden.,https://veenaworld.com/blog/12-best-munnar-resorts-that-will-suit-your-taste-pocket,10.052771,77.065476,name_match
+H091,Boon Inn,palakkad,GB Road,mid-range,Listed 3-star; Parayil Square; in-house laundry and LED TVs.,https://traveltriangle.com/blog/hotels-in-palakkad/,,,
+H092,Four N Square Residency,palakkad,Stadium Bypass Road,mid-range,Listed 3-star; Doha Brothers Centre.,https://traveltriangle.com/blog/hotels-in-palakkad/,10.767748,76.660612,name_match
+H093,ATS Residency,palakkad,Yakkara Branch Road,budget,Near the Jain Temple; complimentary breakfast and free parking.,https://traveltriangle.com/blog/hotels-in-palakkad/,,,
+H094,Hotel Indraprastha,palakkad,English Church Road,unclassified,Near Fort Maidan; premium rooms have spacious balconies.,https://traveltriangle.com/blog/hotels-in-palakkad/,10.765886,76.654486,name_match
+H095,Hotel Jyothis Regency,palakkad,Vadakkencherry,unclassified,On NH 47; 20 rooms; recently renovated.,https://traveltriangle.com/blog/hotels-in-palakkad/,10.597955,76.485335,name_match
+H096,Hotel Srivatsa Regency,palakkad,"Pittupeedika Road, Koduvayur",unclassified,Has a spa called Saukya.,https://traveltriangle.com/blog/hotels-in-palakkad/,10.680990,76.649658,name_match
+H097,Kapilavasthu Hotel,palakkad,Near KSRTC Bus Stand,unclassified,Multi-cuisine vegetarian restaurant; located in S.S. Towers.,https://traveltriangle.com/blog/hotels-in-palakkad/,10.767308,76.648595,name_match
+H098,Paray Village County Hotel,palakkad,Kollengode,unclassified,About half an hour's drive from Palakkad city.,https://traveltriangle.com/blog/hotels-in-palakkad/,,,
+H099,Conrad Pune,pune,,luxury,5-star; described as Hilton's first luxury resort in India; near Aga Khan Palace,https://traveltriangle.com/blog/hotels-in-pune/,18.535165,73.883143,name_match
+H100,The Westin Pune Koregaon Park,pune,Koregaon Park,luxury,5-star hotel with suites and deluxe rooms,https://traveltriangle.com/blog/hotels-in-pune/,18.539064,73.906090,name_match
+H101,Deccan Rendezvous,pune,,mid-range,4-star boutique business hotel with pool and gym,https://traveltriangle.com/blog/hotels-in-pune/,18.523147,73.843665,name_match
+H102,Hotel Studio Estique,pune,Bund Garden Road,mid-range,3-star uniquely designed hotel with round-the-clock service and breakfast spread,https://traveltriangle.com/blog/hotels-in-pune/,,,
+H103,Hotel Woodland,pune,,mid-range,3-star hotel operating since 1993,https://traveltriangle.com/blog/hotels-in-pune/,18.524769,73.874801,name_match
+H104,Keys Prima Hotel Parc Estique,pune,,mid-range,4-star boutique hotel near Phoenix Market City with rooftop pool,https://traveltriangle.com/blog/hotels-in-pune/,,,
+H105,Shantai Hotel,pune,,mid-range,3-star business hotel in the city center,https://traveltriangle.com/blog/hotels-in-pune/,18.518975,73.871198,name_match
+H106,Hotel Meru,pune,,budget,Budget hotel near the railway station with restaurant,https://traveltriangle.com/blog/hotels-in-pune/,,,
+H107,"The Ritz - Carlton, Bangalore",bangalore,Richmond Road,luxury,"5 star hotel; tropical pool, luxury spa and ten on-site restaurants.",https://www.holidify.com/places/bangalore/hotels-where-to-stay.html,12.967687,77.601641,name_match
+H108,Nambiar Club Bellezea,bangalore,Bommasandra,mid-range,"4 star hotel with spa, pool and garden.",https://www.holidify.com/places/bangalore/hotels-where-to-stay.html,,,
+H109,Adarsh Hamilton,bangalore,Richmond Road,mid-range,"4 star hotel with fitness facilities, restaurant and car rental.",https://www.holidify.com/places/bangalore/hotels-where-to-stay.html,12.964435,77.598254,name_match
+H110,Bloom Hub - ORR Marathahalli,bangalore,Marathahalli,mid-range,"4 star hotel with pool, bar and shuttle service.",https://www.holidify.com/places/bangalore/hotels-where-to-stay.html,,,
+H111,Hotel RR International,bangalore,Gandhinagar,budget,Listed among best 2 star hotels; metro station and bus stop nearby.,https://www.holidify.com/hotels/2-star-hotels-in-bangalore-2.html,,,
+H112,Hotel Apple Suites,bangalore,Majestic,budget,Listed among best 2 star hotels in Bangalore; food available.,https://www.holidify.com/hotels/2-star-hotels-in-bangalore-2.html,,,
+H113,Octave Paris Residency,bangalore,,budget,Named among best 2 star hotels in Bangalore; no area given.,https://www.holidify.com/hotels/2-star-hotels-in-bangalore-2.html,,,
+H114,JW Marriott Hotel Chandigarh,chandigarh,Sector 33,luxury,"5 star hotel with sauna, fitness center, spa and several restaurants.",https://www.holidify.com/places/chandigarh/hotels-where-to-stay.html,30.726543,76.767000,name_match
+H115,Hyatt Regency Chandigarh,chandigarh,Daria,luxury,"5 star hotel with fitness center, pool, spa and multiple restaurants.",https://www.holidify.com/places/chandigarh/hotels-where-to-stay.html,,,
+H116,Maya Hotel,chandigarh,Sector 33,mid-range,4 star hotel with ensuite bathrooms and dining options.,https://www.holidify.com/places/chandigarh/hotels-where-to-stay.html,30.725138,76.765744,name_match
+H117,Hotel Cama,chandigarh,Mohali,mid-range,3 star hotel at the Mohali-Chandigarh border in a quiet area.,https://www.holidify.com/places/chandigarh/hotels-where-to-stay.html,,,
+H118,Hometel Chandigarh,chandigarh,Daria,mid-range,"4 star hotel with fitness center, bar, restaurant and free parking.",https://www.holidify.com/places/chandigarh/hotels-where-to-stay.html,,,
+H119,Hotel Paradise Chandigarh,chandigarh,,budget,2 star accommodation within walking distance of Sukhna Lake and Rock Garden.,https://www.holidify.com/hotels/budget-hotels-in-chandigarh-219.html,,,
+H120,Hotel Yolo- Chandigarh,chandigarh,Chandigarh City Centre,budget,Described as budget-friendly; walking distance from Sukhna Lake.,https://www.holidify.com/places/chandigarh/hotels-where-to-stay.html,30.734290,76.830718,name_match
+H121,Hotel Diamond Leaf,chandigarh,Mohali,budget,Described as a decent budget option; reviewers mention clean rooms.,https://www.holidify.com/hotels/budget-hotels-in-chandigarh-219.html,,,
+H122,Taj Coromandel,chennai,Nungambakkam,luxury,"5 star hotel with landscaped pool, sunken bar and wellness centre.",https://www.holidify.com/hotel-collections/best-hotels-in-chennai,13.058152,80.247519,name_match
+H123,The Leela Palace,chennai,Adyar,luxury,5 star beachside property on 4.8 acres with pool and spa.,https://www.holidify.com/hotel-collections/best-hotels-in-chennai,13.016970,80.273871,name_match
+H124,The Madras Grand,chennai,Egmore,mid-range,"4 star hotel near Egmore Junction, close to metro and train station.",https://www.holidify.com/hotel-collections/best-hotels-in-chennai,13.075180,80.256020,name_match
+H125,Fairfield by Marriott Chennai OMR,chennai,Old Mahabalipuram Road,mid-range,4 star hotel 200 m from Sathyabama University.,https://www.holidify.com/hotel-collections/best-hotels-in-chennai,12.875810,80.227369,name_match
+H126,Hotel Halez,chennai,Sholinganallur,mid-range,"4 star hotel, 2.8 kms from VGP Marine Kingdom.",https://www.holidify.com/hotel-collections/best-hotels-in-chennai,,,
+H127,PLAZA GUEST HOUSE,chennai,Vadapalani,budget,Described as pleasant for budget-conscious travelers; A/C rooms and free WiFi.,https://www.holidify.com/hotels/budget-hotels-in-chennai-220.html,,,
+H128,Half Moon Palace Chennai,chennai,Thousand Lights,budget,Described as a budget-friendly hotel with family rooms and a lift.,https://www.holidify.com/hotels/budget-hotels-in-chennai-220.html,,,
+H129,Sri Lakshmi Residency,chennai,Anna Salai,budget,"Described as pocket-friendly; AC and non-AC rooms, 24-hour check-in.",https://www.holidify.com/hotels/budget-hotels-in-chennai-220.html,,,
+H130,Radisson Blu Coimbatore,coimbatore,Avinashi Road,luxury,"5 star hotel with garden, fitness centre and rooftop outdoor pool.",https://www.holidify.com/places/coimbatore/hotels-where-to-stay.html,11.021666,76.991987,name_match
+H131,The Residency Towers Coimbatore,coimbatore,Avinashi Road,luxury,"5 star hotel with outdoor pool, fitness centre and spa.",https://www.holidify.com/places/coimbatore/hotels-where-to-stay.html,,,
+H132,Kiscol Grands Hotel,coimbatore,Coimbatore City Centre,mid-range,"4 star hotel with dining, bar, fitness centre and terrace.",https://www.holidify.com/places/coimbatore/hotels-where-to-stay.html,,,
+H133,Zone Connect by The Park Coimbatore,coimbatore,Civil Aerodrome Post,mid-range,"4 star hotel with restaurant, bar and business center near the airport.",https://www.holidify.com/places/coimbatore/hotels-where-to-stay.html,,,
+H134,IKON By Annapoorna,coimbatore,RS Puram,mid-range,"4 star hotel with bar, fitness center and complimentary breakfast.",https://www.holidify.com/places/coimbatore/hotels-where-to-stay.html,,,
+H135,Hotel Lovely Nest,coimbatore,Coimbatore City Centre,budget,Described as a budget-friendly hotel with clean rooms.,https://www.holidify.com/hotels/budget-hotels-in-coimbatore-222.html,,,
+H136,SK Residency,coimbatore,Ram Nagar,budget,Described as budget-friendly; near the bus stand and railway station.,https://www.holidify.com/hotels/budget-hotels-in-coimbatore-222.html,,,
+H137,HOTEL SRI LAKSHMI,coimbatore,Avinashi Road,budget,"Described as simple, old-fashioned and budget-friendly, near Annapoorna restaurant.",https://www.holidify.com/hotels/budget-hotels-in-coimbatore-222.html,,,
+H138,The Oberoi New Delhi,delhi,Nizamuddin,luxury,"5 star hotel with fitness center, swimming pool and spa.",https://www.holidify.com/places/delhi/hotels-where-to-stay.html,28.596533,77.239815,name_match
+H139,The Leela Palace New Delhi,delhi,Chanakyapuri,luxury,"5 star hotel with outdoor pool, garden, sauna and spa.",https://www.holidify.com/places/delhi/hotels-where-to-stay.html,,,
+H140,"The Connaught, New Delhi- IHCL SeleQtions",delhi,Connaught Place,mid-range,4 star hotel at Connaught Place with outdoor pool and gym.,https://www.holidify.com/places/delhi/hotels-where-to-stay.html,,,
+H141,Empire Platinum Suites,delhi,Paharganj,mid-range,"4 star hotel, 400 m from New Delhi Railway Station.",https://www.holidify.com/places/delhi/hotels-where-to-stay.html,,,
+H142,Airport Hotel Chanakya Delhi,delhi,Mahipalpur,mid-range,"4 star hotel, 2.5 kms from Delhi Airport T3.",https://www.holidify.com/places/delhi/hotels-where-to-stay.html,,,
+H143,Hotel Tourist Deluxe,delhi,Paharganj,budget,"Reviewers call it convenient for budget travelers, near New Delhi railway station.",https://www.holidify.com/hotels/cheap-hotels-in-delhi-near-railway-station-16146.html,,,
+H144,Sarthak Palace - By Pooja Hospitality,delhi,Paharganj,unclassified,Page gives no class; 800 m from New Delhi Railway Station.,https://www.holidify.com/hotels/budget-hotels-in-delhi-227.html,,,
+H145,Hotel Tashkent Palace - Near New Delhi Railway Station,delhi,Paharganj,unclassified,"Page gives no class; wifi, bar, food and shuttle service listed.",https://www.holidify.com/hotels/budget-hotels-in-delhi-227.html,,,
+H146,Vivanta Guwahati,guwahati,GS Road,luxury,"5 star hotel set among greenery, with wooden-floored rooms.",https://www.holidify.com/hotel-collections/luxury-hotels-in-guwahati,,,
+H147,Ratnamouli Palace,guwahati,GS Road,mid-range,"4 star hotel, 2.0 kms from Regional Science Center.",https://www.holidify.com/hotel-collections/luxury-hotels-in-guwahati,,,
+H148,Treebo Apollo,guwahati,Paltan Bazaar,budget,"Described as budget-friendly, with in-house restaurant near the Brahmaputra River.",https://www.holidify.com/hotel-collections/luxury-hotels-in-guwahati,,,
+H149,JD Grand Inn,guwahati,Ulubari,budget,Reviewers call it a budget hotel offering basic facilities.,https://www.holidify.com/hotel-collections/luxury-hotels-in-guwahati,,,
+H150,Itsy Hotels Ransu Residency,guwahati,Ulubari,budget,"Described as budget-friendly, with complimentary breakfast.",https://www.holidify.com/hotel-collections/luxury-hotels-in-guwahati,,,
