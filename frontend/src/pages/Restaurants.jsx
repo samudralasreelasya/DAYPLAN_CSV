@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiMapPin, FiStar } from "react-icons/fi";
+import { FiMapPin } from "react-icons/fi";
 import { useTrip } from "../context/TripContext.jsx";
 import TripTabs from "../components/TripTabs.jsx";
 import EmptyTripState from "../components/EmptyTripState.jsx";
@@ -46,9 +46,6 @@ export default function Restaurants() {
               <Card key={r.id ?? r.name}>
                 <div className="flex items-start justify-between gap-2">
                   <h4 className="font-semibold">{r.name}</h4>
-                  <span className="flex shrink-0 items-center gap-1 text-sm text-amber-500">
-                    <FiStar /> {(3.8 + Math.random()).toFixed(1)}
-                  </span>
                 </div>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   {r.cuisine ? r.cuisine : r.category === "restaurant" ? "Local cuisine" : r.category}

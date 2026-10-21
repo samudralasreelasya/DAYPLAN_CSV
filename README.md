@@ -1,165 +1,597 @@
-# DayPlan — AI Smart Travel Planner
+# DayPlan: Smart Travel Planner
 
-A full-stack travel planning app: React (Vite + Tailwind) frontend, Flask REST API backend,
-SQLite database, **free keyless live APIs** (OpenStreetMap / Nominatim, OSRM, Open-Meteo,
-Overpass) blended with **curated local CSV datasets** as a resilience layer and standalone
-feature source.
+Plan a trip, see what is *on the way*, find places beyond the famous ones, and budget it.
+React (Vite + Tailwind + Leaflet) frontend, Flask + SQLAlchemy + SQLite backend.
+Live data comes from free, keyless APIs (Nominatim, OSRM, Open-Meteo, Overpass). Curated
+local CSV datasets back them up, so a slow or dead public server does not empty the page.
 
-## What's in this project
+## Features
 
-- Live trip planning (route, weather, attractions, hotels, restaurants, budget, AI itinerary)
-  sourced from free OpenStreetMap-ecosystem APIs.
-- A **local dataset layer** (`backend/data/`) covering ~460 curated Indian tourist spots,
-  30 globally famous landmarks, and 143 curated restaurants/hidden-spots across 13 cities,
-  wired into the backend as:
-  - **A fallback** — if the live Overpass API returns too little (or fails/times out), the
-    app blends in curated local attractions or restaurants instead of showing an empty page,
-    computing real distances with the same haversine logic used for live results.
-  - **A feature** — `/api/trending` surfaces the most-visited famous landmarks worldwide,
-    independent of any live API call.
-- **Veg/non-veg restaurant classification**, sourced from two places and unified into one
-  vocabulary (`veg` / `non-veg` / `both` / `NA`):
-  - Live results: OpenStreetMap's `diet:vegetarian` / `diet:vegan` tags, extracted in
-    `overpass_service.py`.
-  - Fallback results: an explicit `VegStatus` column in the curated restaurant CSVs, used
-    whenever live tagging is sparse or missing (which is most of the time — OSM rarely tags
-    diet info on small local restaurants).
-- **Graceful degradation**: every external API call in the main planning flow (Overpass ×3,
-  OSRM, Open-Meteo) is individually fault-tolerant. If one service is temporarily unavailable,
-  the rest of the trip plan still renders instead of the whole request failing.
+| Feature | What it does |
+|---|---|
+| Plan a trip | One request (`POST /api/plan-trip`) returns route, weather, attractions, hotels, restaurants, budget and itinerary |
+| Destination | Tourist attractions near the destination, nearest first (live + curated) |
+| Highlights | Hidden / authentic spots, with hotels and restaurants filtered out of the list |
+| **On the Way** | Stops along the driving route (see "Along-the-route stops"), shown as a numbered timeline **and** as numbered markers on the existing Map tab |
+| Hotels | Live OpenStreetMap hotels. An honest "unavailable" message if the live lookup failed |
+| Restaurants | Live + curated, with a veg / non-veg / both filter |
+| Weather, Budget, Itinerary | Open-Meteo forecast, a budget breakdown, a deterministic day-by-day plan |
+| Accounts | Register / login (JWT), saved trips and favourites |
 
-## Project Structure
+Star ratings are shown only when the data really contains them. Nothing is invented.
 
-```
-dayplan/
-├── backend/          Flask REST API
-│   ├── app.py                  App factory & entrypoint (loads CSV datasets at startup)
-│   ├── config.py                Environment-driven configuration
-│   ├── data/                   Local CSV datasets (curated attractions, famous places)
-│   ├── database/                 SQLAlchemy models
-│   ├── routes/                  Thin controllers (one blueprint per resource)
-│   ├── scripts/
-│   │   └── geocode_restaurant_csvs.py  One-time Nominatim geocoding for the curated CSVs
-│   ├── services/
-│   │   ├── local_data_service.py   Loads/serves the CSV datasets from memory
-│   │   ├── destination_service.py  Live + local attraction merge, fallback, sorting
-│   │   ├── restaurant_service.py   Same merge/fallback pattern, applied to restaurants
-│   │   │                            + veg/non-veg filtering
-│   │   └── ...                    Other external API integrations & business logic
-│   └── utils/                   Validators, geo math (haversine), centralized error handling
-└── frontend/          React + Vite + Tailwind app
-    └── src/
-        ├── api/          Axios client
-        ├── components/    Navbar, Footer, shared UI, TripTabs
-        ├── context/      Auth + Trip state
-        └── pages/        One component per route
-```
+## Resilience design
 
-## Running the Backend
+Every external call is independent. A failure degrades one section, never the whole request.
 
-```bash
+| Section | Live source | Fallback | If both fail |
+|---|---|---|---|
+| Route | OSRM | none | route is `null`, rest of plan still renders |
+| Weather | Open-Meteo | none | `null` |
+| Attractions | Overpass | curated tourist spots (459) | empty list |
+| Restaurants | Overpass | curated restaurants (143 rows) | empty list |
+| Highlights | Overpass | curated spots | empty list |
+| Along the route | Overpass (route search) | curated spots near the route | `[]` plus an honest empty state |
+| Hotels | Overpass | **none yet** (dataset in progress) | `hotelsStatus: "unavailable"` |
+
+Rules that apply across the services:
+
+- **Blend, don't replace.** If live results number fewer than 5, curated rows are added to them
+  instead of swapping the whole list.
+- **Fail-fast cooldown.** After an Overpass outage the app stops calling it for 120 s, so one
+  dead server does not make every request wait for a timeout.
+- **Silent failures are treated as failures.** Overpass can answer HTTP 200 with an empty list and
+  a `runtime error` remark when it is overloaded. That is raised as an error, not read as
+  "no results".
+- Route searches never start the global cooldown (`trip_cooldown=False`).
+- Failures are logged server-side with Python `logging`.
+
+## Along-the-route stops
+
+Implemented in `services/corridor_service.py` and `utils/geo.py`.
+
+1. The OSRM route is loaded into a `RouteIndex`. It projects points onto a local flat map and
+   computes, for any spot, its distance off the route and its distance along the route (km).
+2. Candidates are all curated spots plus live OpenStreetMap places. Only spots within
+   **5 km** of the route are kept. The first and last **10 km** are skipped, because those are
+   the origin and destination themselves.
+3. Hotels and restaurants are excluded (`EXCLUDED_TAGS`).
+4. Live and curated duplicates are merged (same normalised name, or under 0.25 km apart).
+5. The route is cut into 15 equal stretches, with at most 2 stops per stretch. This stops one
+   city from supplying all the stops. Curated spots come first within a stretch. Results are
+   ordered by distance along the route.
+6. Live route query: the route is thinned to one waypoint about every 4 km, sent in pieces of 50
+   points, with at most 6 queries and a 30 s time budget. If the first query fails, the error is
+   raised. If a later one fails, the partial result is kept.
+
+## Project structure
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> function N($s){ $s.Replace("`r`n","`n") }
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> function Patch($path, $old, $new){
+>>   $t = N (Get-Content $path -Raw)
+>>   $o = N $old
+>>   if (-not $t.Contains($o)) { Write-Host "NOT FOUND in $path" -ForegroundColor Red; return }
+>>   $i = $t.IndexOf($o)
+>>   $t = $t.Substring(0,$i) + (N $new) + $t.Substring($i + $o.Length)
+>>   [System.IO.File]::WriteAllText((Resolve-Path $path), $t, (New-Object System.Text.UTF8Encoding $false))
+>>   Write-Host "patched $path" -ForegroundColor Green
+>> }
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan>
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> # Hotels.jsx: show stars only if the data has them
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Hotels.jsx" @'
+>>                   <span className="flex items-center gap-1 text-sm text-amber-500">
+>>                     <FiStar /> {h.stars || (3 + Math.random() * 2).toFixed(1)}
+>>                   </span>
+>> '@ @'
+>>                   {h.stars ? (
+>>                     <span className="flex items-center gap-1 text-sm text-amber-500">
+>>                       <FiStar /> {h.stars}
+>>                     </span>
+>>                   ) : null}
+>> '@
+patched frontend\src\pages\Hotels.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan>
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> # Restaurants.jsx: remove the random rating and the unused import
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Restaurants.jsx" @'
+>>                   <span className="flex shrink-0 items-center gap-1 text-sm text-amber-500">
+>>                     <FiStar /> {(3.8 + Math.random()).toFixed(1)}
+>>                   </span>
+>>
+>> '@ ''
+patched frontend\src\pages\Restaurants.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Restaurants.jsx" 'import { FiMapPin, FiStar } from' 'import { FiMapPin } from'
+patched frontend\src\pages\Restaurants.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan>
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> # Destination.jsx: remove the name-hash "rating"
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Destination.jsx" @'
+>>                   <span className="flex items-center gap-1 text-sm text-amber-500">
+>>                     <FiStar /> {getStableRating(a.name)}
+>>                   </span>
+>>
+>> '@ ''
+patched frontend\src\pages\Destination.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Destination.jsx" 'import { FiStar, FiMapPin, FiSun }' 'import { FiMapPin, FiSun }'
+patched frontend\src\pages\Destination.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> $d = N (Get-Content "frontend\src\pages\Destination.jsx" -Raw)
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> $d = [regex]::Replace($d, '// Deterministic "rating".*?\n}\n\n', '', 'Singleline')
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> [System.IO.File]::WriteAllText((Resolve-Path "frontend\src\pages\Destination.jsx"), $d, (New-Object System.Text.UTF8Encoding $false))
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan>
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Select-String -Path frontend\src\pages\*.jsx -Pattern "Math.random|getStableRating|FiStar"
+
+frontend\src\pages\Hotels.jsx:1:import { FiStar, FiMapPin, FiDollarSign } from "react-icons/fi";
+frontend\src\pages\Hotels.jsx:27:                      <FiStar /> {h.stars}
+
+
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> $readme = @'
+>> # DayPlan: Smart Travel Planner
+>>
+>> Plan a trip, see what is *on the way*, find places beyond the famous ones, and budget it.
+>> React (Vite + Tailwind + Leaflet) frontend, Flask + SQLAlchemy + SQLite backend.
+>> Live data comes from free, keyless APIs (Nominatim, OSRM, Open-Meteo, Overpass). Curated
+>> local CSV datasets back them up, so a slow or dead public server does not empty the page.
+>>
+>> ## Features
+>>
+>> | Feature | What it does |
+>> |---|---|
+>> | Plan a trip | One request (`POST /api/plan-trip`) returns route, weather, attractions, hotels, restaurants, budget and itinerary |
+>> | Destination | Tourist attractions near the destination, nearest first (live + curated) |
+>> | Highlights | Hidden / authentic spots, with hotels and restaurants filtered out of the list |
+>> | **On the Way** | Stops along the driving route (see "Along-the-route stops"), shown as a numbered timeline **and** as numbered markers on the existing Map tab |
+>> | Hotels | Live OpenStreetMap hotels. An honest "unavailable" message if the live lookup failed |
+>> | Restaurants | Live + curated, with a veg / non-veg / both filter |
+>> | Weather, Budget, Itinerary | Open-Meteo forecast, a budget breakdown, a deterministic day-by-day plan |
+>> | Accounts | Register / login (JWT), saved trips and favourites |
+>>
+>> Star ratings are shown only when the data really contains them. Nothing is invented.
+>>
+>> ## Resilience design
+>>
+>> Every external call is independent. A failure degrades one section, never the whole request.
+>>
+>> | Section | Live source | Fallback | If both fail |
+>> |---|---|---|---|
+>> | Route | OSRM | none | route is `null`, rest of plan still renders |
+>> | Weather | Open-Meteo | none | `null` |
+>> | Attractions | Overpass | curated tourist spots (459) | empty list |
+>> | Restaurants | Overpass | curated restaurants (143 rows) | empty list |
+>> | Highlights | Overpass | curated spots | empty list |
+>> | Along the route | Overpass (route search) | curated spots near the route | `[]` plus an honest empty state |
+>> | Hotels | Overpass | **none yet** (dataset in progress) | `hotelsStatus: "unavailable"` |
+>>
+>> Rules that apply across the services:
+>>
+>> - **Blend, don't replace.** If live results number fewer than 5, curated rows are added to them
+>>   instead of swapping the whole list.
+>> - **Fail-fast cooldown.** After an Overpass outage the app stops calling it for 120 s, so one
+>>   dead server does not make every request wait for a timeout.
+>> - **Silent failures are treated as failures.** Overpass can answer HTTP 200 with an empty list and
+>>   a `runtime error` remark when it is overloaded. That is raised as an error, not read as
+>>   "no results".
+>> - Route searches never start the global cooldown (`trip_cooldown=False`).
+>> - Failures are logged server-side with Python `logging`.
+>>
+>> ## Along-the-route stops
+>>
+>> Implemented in `services/corridor_service.py` and `utils/geo.py`.
+>>
+>> 1. The OSRM route is loaded into a `RouteIndex`. It projects points onto a local flat map and
+>>    computes, for any spot, its distance off the route and its distance along the route (km).
+>> 2. Candidates are all curated spots plus live OpenStreetMap places. Only spots within
+>>    **5 km** of the route are kept. The first and last **10 km** are skipped, because those are
+>>    the origin and destination themselves.
+>> 3. Hotels and restaurants are excluded (`EXCLUDED_TAGS`).
+>> 4. Live and curated duplicates are merged (same normalised name, or under 0.25 km apart).
+>> 5. The route is cut into 15 equal stretches, with at most 2 stops per stretch. This stops one
+>>    city from supplying all the stops. Curated spots come first within a stretch. Results are
+>>    ordered by distance along the route.
+>> 6. Live route query: the route is thinned to one waypoint about every 4 km, sent in pieces of 50
+>>    points, with at most 6 queries and a 30 s time budget. If the first query fails, the error is
+>>    raised. If a later one fails, the partial result is kept.
+>>
+>> ## Project structure
+>> clear
+>>
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Write-File "$repo\backend\scripts\check_route_query.py" @'
+>> """Check the along-the-route Overpass query on its own, with long timeouts.
+>>
+>> Run from the backend folder:
+>>     python scripts/check_route_query.py route.json
+>>
+>> route.json = the "route" object from /api/plan-trip. For each Overpass server
+>> this (1) sends a tiny query, then (2) if that worked, sends the first ~200 km
+>> piece of your route, exactly as the app would, and reports time and results.
+>> It shows whether the SERVER is the problem or the QUERY is.
+>> """
+>> import json
+>> import os
+>> import sys
+>> import time
+>>
+>> sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+>>
+>> import requests
+>> from config import Config
+>> from services import overpass_service
+>>
+>> TINY = '[out:json][timeout:15];node["tourism"="hotel"](around:3000,19.076,72.8777);out count;'
+>> ENDPOINTS = [
+>>     ("app default", Config.OVERPASS_URL),
+>>     ("kumi mirror", "https://overpass.kumi.systems/api/interpreter"),
+>>     ("private.coffee mirror", "https://overpass.private.coffee/api/interpreter"),
+>> ]
+>>
+>>
+>> def post(url, query, timeout):
+>>     start = time.time()
+>>     try:
+>>         r = requests.post(url, data={"data": query},
+>>                           headers={"User-Agent": Config.USER_AGENT}, timeout=timeout)
+>>         return r, round(time.time() - start, 1), None
+>>     except requests.RequestException as e:
+>>         return None, round(time.time() - start, 1), f"{type(e).__name__}: {str(e)[:120]}"
+>>
+>>
+>> def main(path):
+>>     with open(path, encoding="utf-8-sig") as f:
+>>         coords = json.load(f)["geometry"]["coordinates"]
+>>     waypoints = overpass_service._route_waypoints(coords, overpass_service.ROUTE_STEP_KM)
+>>     piece = waypoints[:overpass_service.ROUTE_POINTS_PER_QUERY]
+>>     query = overpass_service._route_query(piece, 5000)
+>>     print(f"Route has {len(waypoints)} waypoints; first piece = {len(piece)} points\n")
+>>
+>>     for label, url in ENDPOINTS:
+>>         r, took, err = post(url, TINY, 30)
+>>         if err or not r.ok:
+>>             print(f"{label:24} tiny query FAILED ({took}s) {err or 'HTTP ' + str(r.status_code)}")
+>>             continue
+>>         print(f"{label:24} tiny query OK ({took}s)")
+>>         r, took, err = post(url, query, 90)
+>>         if err:
+>>             print(f"{'':24} route piece FAILED after {took}s: {err}")
+>>         elif not r.ok:
+>>             print(f"{'':24} route piece HTTP {r.status_code} after {took}s: {r.text[:200]!r}")
+>>         else:
+>>             data = r.json()
+>>             elements = data.get("elements", [])
+>>             names = [e.get("tags", {}).get("name") for e in elements][:8]
+>>             print(f"{'':24} route piece HTTP 200 in {took}s: {len(elements)} places, e.g. {names}")
+>>             if data.get("remark"):
+>>                 print(f"{'':24} !! Overpass remark: {data['remark']}")
+>>
+>>
+>> if __name__ == "__main__":
+>>     if len(sys.argv) != 2:
+>>         sys.exit("Usage: python scripts/check_route_query.py route.json")
+>>     main(sys.argv[1])
+>> '@
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> if ($t.Contains("class OverpassRuntimeError")) {
+>>   "overpass_service.py already patched"
+>> } else {
+>>   # Edit 1: the new error type, placed just before _is_outage
+>>   $old1 = "def _is_outage(exc):"
+>>   $new1 = N @'
+>> class OverpassRuntimeError(requests.RequestException):
+>>     """Overpass accepted the query but gave up on it (out of time or memory).
+>>     It reports this as HTTP 200 with an empty list and a "remark", which would
+>>     otherwise look exactly like "there is nothing here"."""
+>>
+>>
+>> def _is_outage(exc):
+>> '@
+>>
+>>   # Edit 2: check the remark after a successful HTTP answer
+>>   $old2 = N @'
+>>         resp.raise_for_status()
+>>         return resp.json()
+>>     except requests.RequestException as e:
+>>         # Log the REAL reason; the error raised below is deliberately generic.
+>>         status = getattr(getattr(e, "response", None), "status_code", None)
+>>         reason = f"HTTP {status}" if status else type(e).__name__
+>> '@
+>>   $new2 = N @'
+>>         resp.raise_for_status()
+>>         data = resp.json()
+>>         remark = data.get("remark", "") if isinstance(data, dict) else ""
+>>         if "runtime error" in remark:
+>>             raise OverpassRuntimeError(remark)
+>>         return data
+>>     except requests.RequestException as e:
+>>         # Log the REAL reason; the error raised below is deliberately generic.
+>>         status = getattr(getattr(e, "response", None), "status_code", None)
+>>         reason = f"HTTP {status}" if status else type(e).__name__
+>>         if isinstance(e, OverpassRuntimeError):
+>>             reason = f"Overpass gave up: {str(e)[:100]}"
+>> '@
+>>
+>>   if (-not $t.Contains($old1)) { throw "Edit 1: '_is_outage' line not found" }
+>>   if (-not $t.Contains($old2)) { throw "Edit 2: _query_overpass block not found - send me the file" }
+>>   $t = $t.Replace($old1, $new1).Replace($old2, $new2)
+>>   Write-File $f $t
+>>   "overpass_service.py patched"
+>> }
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Write-File "$repo\backend\scripts\check_route_query.py" @'
+>> """Check the along-the-route Overpass query on its own, with long timeouts.
+>>
+>> Run from the backend folder:
+>>     python scripts/check_route_query.py route.json
+>>
+>> route.json = the "route" object from /api/plan-trip. For each Overpass server
+>> this (1) sends a tiny query, then (2) if that worked, sends the first ~200 km
+>> piece of your route, exactly as the app would, and reports time and results.
+>> It shows whether the SERVER is the problem or the QUERY is.
+>> """
+>> import json
+>> import os
+>> import sys
+>> import time
+>>
+>> sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+>>
+>> import requests
+>> from config import Config
+>> from services import overpass_service
+>>
+>> TINY = '[out:json][timeout:15];node["tourism"="hotel"](around:3000,19.076,72.8777);out count;'
+>> ENDPOINTS = [
+>>     ("app default", Config.OVERPASS_URL),
+>>     ("kumi mirror", "https://overpass.kumi.systems/api/interpreter"),
+>>     ("private.coffee mirror", "https://overpass.private.coffee/api/interpreter"),
+>> ]
+>>
+>>
+>> def post(url, query, timeout):
+>>     start = time.time()
+>>     try:
+>>         r = requests.post(url, data={"data": query},
+>>                           headers={"User-Agent": Config.USER_AGENT}, timeout=timeout)
+>>         return r, round(time.time() - start, 1), None
+>>     except requests.RequestException as e:
+>>         return None, round(time.time() - start, 1), f"{type(e).__name__}: {str(e)[:120]}"
+>>
+>>
+>> def main(path):
+>>     with open(path, encoding="utf-8-sig") as f:
+>>         coords = json.load(f)["geometry"]["coordinates"]
+>>     waypoints = overpass_service._route_waypoints(coords, overpass_service.ROUTE_STEP_KM)
+>>     piece = waypoints[:overpass_service.ROUTE_POINTS_PER_QUERY]
+>>     query = overpass_service._route_query(piece, 5000)
+>>     print(f"Route has {len(waypoints)} waypoints; first piece = {len(piece)} points\n")
+>>
+>>     for label, url in ENDPOINTS:
+>>         r, took, err = post(url, TINY, 30)
+>>         if err or not r.ok:
+>>             print(f"{label:24} tiny query FAILED ({took}s) {err or 'HTTP ' + str(r.status_code)}")
+>>             continue
+>>         print(f"{label:24} tiny query OK ({took}s)")
+>>         r, took, err = post(url, query, 90)
+>>         if err:
+>>             print(f"{'':24} route piece FAILED after {took}s: {err}")
+>>         elif not r.ok:
+>>             print(f"{'':24} route piece HTTP {r.status_code} after {took}s: {r.text[:200]!r}")
+>>         else:
+>>             elements = r.json().get("elements", [])
+>>             names = [e.get("tags", {}).get("name") for e in elements][:8]
+>>             print(f"{'':24} route piece OK in {took}s: {len(elements)} places, e.g. {names}")
+>>
+>>
+>> if __name__ == "__main__":
+>>     if len(sys.argv) != 2:
+>>         sys.exit("Usage: python scripts/check_route_query.py route.json")
+>>     main(sys.argv[1])
+>> '@
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> function N($s){ $s.Replace("`r`n","`n") }
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> function Patch($path, $old, $new){
+>>   $t = N (Get-Content $path -Raw)
+>>   $o = N $old
+>>   if (-not $t.Contains($o)) { Write-Host "NOT FOUND in $path" -ForegroundColor Red; return }
+>>   $i = $t.IndexOf($o)
+>>   $t = $t.Substring(0,$i) + (N $new) + $t.Substring($i + $o.Length)
+>>   [System.IO.File]::WriteAllText((Resolve-Path $path), $t, (New-Object System.Text.UTF8Encoding $false))
+>>   Write-Host "patched $path" -ForegroundColor Green
+>> }
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan>
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> # Hotels.jsx: show stars only if the data has them
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Hotels.jsx" @'
+>>                   <span className="flex items-center gap-1 text-sm text-amber-500">
+>>                     <FiStar /> {h.stars || (3 + Math.random() * 2).toFixed(1)}
+>>                   </span>
+>> '@ @'
+>>                   {h.stars ? (
+>>                     <span className="flex items-center gap-1 text-sm text-amber-500">
+>>                       <FiStar /> {h.stars}
+>>                     </span>
+>>                   ) : null}
+>> '@
+NOT FOUND in frontend\src\pages\Hotels.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan>
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> # Restaurants.jsx: remove the random rating and the unused import
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Restaurants.jsx" @'
+>>                   <span className="flex shrink-0 items-center gap-1 text-sm text-amber-500">
+>>                     <FiStar /> {(3.8 + Math.random()).toFixed(1)}
+>>                   </span>
+>>
+>> '@ ''
+NOT FOUND in frontend\src\pages\Restaurants.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Restaurants.jsx" 'import { FiMapPin, FiStar } from' 'import { FiMapPin } from'
+NOT FOUND in frontend\src\pages\Restaurants.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan>
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> # Destination.jsx: remove the name-hash "rating"
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Destination.jsx" @'
+>>                   <span className="flex items-center gap-1 text-sm text-amber-500">
+>>                     <FiStar /> {getStableRating(a.name)}
+>>                   </span>
+>>
+>> '@ ''
+NOT FOUND in frontend\src\pages\Destination.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Patch "frontend\src\pages\Destination.jsx" 'import { FiStar, FiMapPin, FiSun }' 'import { FiMapPin, FiSun }'
+NOT FOUND in frontend\src\pages\Destination.jsx
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> $d = N (Get-Content "frontend\src\pages\Destination.jsx" -Raw)
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> $d = [regex]::Replace($d, '// Deterministic "rating".*?\n}\n\n', '', 'Singleline')
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> [System.IO.File]::WriteAllText((Resolve-Path "frontend\src\pages\Destination.jsx"), $d, (New-Object System.Text.UTF8Encoding $false))
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan>
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> Select-String -Path frontend\src\pages\*.jsx -Pattern "Math.random|getStableRating|FiStar"
+
+frontend\src\pages\Hotels.jsx:1:import { FiStar, FiMapPin, FiDollarSign } from "react-icons/fi";
+frontend\src\pages\Hotels.jsx:27:                      <FiStar /> {h.stars}
+
+
+PS C:\Users\samud\OneDrive\Desktop\dayplan\dayplan> $readme = @'
+>> # DayPlan: Smart Travel Planner
+>>
+>> Plan a trip, see what is *on the way*, find places beyond the famous ones, and budget it.
+>> React (Vite + Tailwind + Leaflet) frontend, Flask + SQLAlchemy + SQLite backend.
+>> Live data comes from free, keyless APIs (Nominatim, OSRM, Open-Meteo, Overpass). Curated
+>> local CSV datasets back them up, so a slow or dead public server does not empty the page.
+>>
+>> ## Features
+>>
+>> | Feature | What it does |
+>> |---|---|
+>> | Plan a trip | One request (`POST /api/plan-trip`) returns route, weather, attractions, hotels, restaurants, budget and itinerary |
+>> | Destination | Tourist attractions near the destination, nearest first (live + curated) |
+>> | Highlights | Hidden / authentic spots, with hotels and restaurants filtered out of the list |
+>> | **On the Way** | Stops along the driving route (see "Along-the-route stops"), shown as a numbered timeline **and** as numbered markers on the existing Map tab |
+>> | Hotels | Live OpenStreetMap hotels. An honest "unavailable" message if the live lookup failed |
+>> | Restaurants | Live + curated, with a veg / non-veg / both filter |
+>> | Weather, Budget, Itinerary | Open-Meteo forecast, a budget breakdown, a deterministic day-by-day plan |
+>> | Accounts | Register / login (JWT), saved trips and favourites |
+>>
+>> Star ratings are shown only when the data really contains them. Nothing is invented.
+>>
+>> ## Resilience design
+>>
+>> Every external call is independent. A failure degrades one section, never the whole request.
+>>
+>> | Section | Live source | Fallback | If both fail |
+>> |---|---|---|---|
+>> | Route | OSRM | none | route is `null`, rest of plan still renders |
+>> | Weather | Open-Meteo | none | `null` |
+>> | Attractions | Overpass | curated tourist spots (459) | empty list |
+>> | Restaurants | Overpass | curated restaurants (143 rows) | empty list |
+>> | Highlights | Overpass | curated spots | empty list |
+>> | Along the route | Overpass (route search) | curated spots near the route | `[]` plus an honest empty state |
+>> | Hotels | Overpass | **none yet** (dataset in progress) | `hotelsStatus: "unavailable"` |
+>>
+>> Rules that apply across the services:
+>>
+>> - **Blend, don't replace.** If live results number fewer than 5, curated rows are added to them
+>>   instead of swapping the whole list.
+>> - **Fail-fast cooldown.** After an Overpass outage the app stops calling it for 120 s, so one
+>>   dead server does not make every request wait for a timeout.
+>> - **Silent failures are treated as failures.** Overpass can answer HTTP 200 with an empty list and
+>>   a `runtime error` remark when it is overloaded. That is raised as an error, not read as
+>>   "no results".
+>> - Route searches never start the global cooldown (`trip_cooldown=False`).
+>> - Failures are logged server-side with Python `logging`.
+>>
+>> ## Along-the-route stops
+>>
+>> Implemented in `services/corridor_service.py` and `utils/geo.py`.
+>>
+>> 1. The OSRM route is loaded into a `RouteIndex`. It projects points onto a local flat map and
+>>    computes, for any spot, its distance off the route and its distance along the route (km).
+>> 2. Candidates are all curated spots plus live OpenStreetMap places. Only spots within
+>>    **5 km** of the route are kept. The first and last **10 km** are skipped, because those are
+>>    the origin and destination themselves.
+>> 3. Hotels and restaurants are excluded (`EXCLUDED_TAGS`).
+>> 4. Live and curated duplicates are merged (same normalised name, or under 0.25 km apart).
+>> 5. The route is cut into 15 equal stretches, with at most 2 stops per stretch. This stops one
+>>    city from supplying all the stops. Curated spots come first within a stretch. Results are
+>>    ordered by distance along the route.
+>> 6. Live route query: the route is thinned to one waypoint about every 4 km, sent in pieces of 50
+>>    points, with at most 6 queries and a 30 s time budget. If the first query fails, the error is
+>>    raised. If a later one fails, the partial result is kept.
+>>
+>> ## P
+
+## Running it
+
+Backend:
+
+```powershell
 cd backend
-python3 -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+python -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env            # edit secrets as needed
-python app.py                   # runs on http://localhost:5000
+copy .env.example .env
+python app.py                      # http://localhost:5000
 ```
 
-The SQLite database (`dayplan.db`) and all tables are created automatically on first run.
+Frontend:
 
-## Running the Frontend
-
-```bash
+```powershell
 cd frontend
 npm install
-cp .env.example .env            # points VITE_API_URL at your backend
-npm run dev                     # runs on http://localhost:5173
+copy .env.example .env             # set VITE_API_URL
+npm run dev                        # http://localhost:5173
 ```
 
-## Key Flow
+The SQLite database is created on first run.
 
-1. **Home** → "Plan My Trip" → **Planner** (origin, destination, people, days, budget, preference)
-2. Planner calls `POST /api/plan-trip`, which orchestrates geocoding, routing, attractions,
-   hotels, restaurants, weather, budget, and itinerary generation in one request.
-3. Results are stored in `TripContext` and shown across the **Destination / Transportation /
-   Map / Hotels / Restaurants / Weather / Budget / Itinerary** tabs.
-4. Logged-in users can **Save Trip** (stored per-user) and revisit it under **Saved Trips**.
+## Tests
 
-## APIs Used (all free, no API key required)
+```powershell
+cd backend
+pip install pytest
+python -m pytest tests -q          # 96 tests
+```
 
-| Purpose      | Provider                          |
-|--------------|------------------------------------|
-| Geocoding    | OpenStreetMap Nominatim            |
-| Routing      | OSRM (Open Source Routing Machine) |
-| Weather      | Open-Meteo                         |
-| Hotels/Food/Attractions | Overpass API (OpenStreetMap), backed by local CSV fallback |
-| Maps         | Leaflet.js + OpenStreetMap tiles   |
+`pytest` is not in `requirements.txt` (it is a development tool). Tests use `monkeypatch` fakes
+for Overpass and OSRM, so they run offline and never hit a public server.
 
-## Local Dataset Endpoints
+## Diagnostic scripts (`backend/scripts`)
 
-| Endpoint | Description |
+| Script | Use |
 |---|---|
-| `GET /api/local-attractions?city=<name>` | Curated attractions for one of 13 pre-loaded Indian cities |
-| `GET /api/trending?limit=<n>` | Top N globally famous landmarks by annual visitor count |
-| `GET /api/restaurants?destination=<name>&veg=<bool>` | Restaurants for one of 13 pre-loaded cities (live + curated fallback), optionally filtered to veg/both only |
+| `check_overpass.py` | Is Overpass answering a tiny query, and how fast? Run this first |
+| `check_route_query.py` | Tries the real route query and prints the server's `remark` if any |
+| `check_corridor.py` | Runs the corridor selection on a saved `route.json` |
 
-## Resilience Design
+For `check_corridor.py`, save a route first with
+`$r.route | ConvertTo-Json -Depth 10 -Compress | Out-File -Encoding utf8 route.json`.
+Delete `route.json` afterwards and never `git add` it.
 
-Rather than a single all-or-nothing API call, `POST /api/plan-trip` treats each external
-dependency independently:
+## API endpoints
 
-- **Attractions**: tries Overpass first; if it returns fewer than 5 results (or fails
-  entirely), curated CSV spots are blended in and the combined list is sorted by real
-  distance from the destination.
-- **Restaurants**: same pattern as attractions — tries Overpass first (`amenity=restaurant`
-  and `amenity=cafe`), blends in the curated CSV fallback if results are sparse. The curated
-  CSVs intentionally combine restaurants with nearby hidden-spots/monuments in one file per
-  city (for the local-attractions feature above), so `restaurant_service.py` filters to
-  `Category in (restaurant, street_food)` before returning results — otherwise fallback
-  blending would surface monuments in the restaurant list, which was caught and fixed during
-  testing.
-- **Hotels / Route / Weather**: each wrapped individually, so a single failed
-  service degrades that one section of the response (empty list / `null`) instead of
-  failing the whole request. All failures are logged server-side via Python's `logging`
-  module for visibility during development.
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/plan-trip` | Full plan (includes `routeHighlights`, `hotels`, `hotelsStatus`) |
+| `GET /api/destination`, `/api/highlights`, `/api/hotels`, `/api/restaurants` | Per-section data |
+| `GET /api/route`, `/api/transport`, `/api/weather` | Route, transport options, weather |
+| `POST /api/budget`, `/api/itinerary` | Budget and itinerary |
+| `GET /api/local-attractions?city=`, `/api/trending?limit=` | Curated datasets |
+| `POST /api/register`, `/api/login`, `GET /api/profile` | Auth |
+| `POST/GET /api/trips`, `DELETE /api/trips/<id>` | Saved trips |
+| `POST/GET /api/favorites`, `DELETE /api/favorites/<id>` | Favourites |
 
-### A data-integrity lesson from building this
+## Datasets
 
-Two non-obvious bugs surfaced while testing the restaurant fallback against live traffic,
-worth noting since they're the kind of thing that's easy to miss in a demo but breaks a real
-client:
+- 459 curated tourist spots across 13 Indian cities, 30 famous global landmarks.
+- 143 curated restaurant / hidden-spot rows, of which 69 (48%) are geocoded. Ungeocoded rows
+  cannot be placed by distance.
+- Hotel dataset: **in progress**. Only sourced rows with a source URL will be added.
 
-1. **pandas silently treats the literal string `"NA"` as a missing value.** The curated CSVs
-   deliberately use `"NA"` to mean "no diet tag available" in the `VegStatus` column, but
-   `pandas.read_csv()` converts it to `float('nan')` by default — which `jsonify()` then
-   serializes as the invalid JSON token `NaN`, breaking `JSON.parse()` on the frontend. Fixed
-   with `keep_default_na=False, na_values=['']` in `local_data_service.py`, which keeps `"NA"`
-   as a real string while still treating genuinely blank cells (ungeocoded coordinates) as
-   missing.
-2. **Ungeocoded coordinates need explicit sanitizing before the JSON response is built**, not
-   just before distance calculations — the same `NaN`-in-JSON problem applies to any field
-   pandas can produce as a float `NaN`, not only the ones a given function happens to compute
-   with.
+### Data-integrity lesson: pandas and the string "NA"
+
+`pandas.read_csv()` turns the text `NA` into `NaN` by default. The `VegStatus` column uses `NA` on
+purpose (no diet tag), and `jsonify()` then writes the invalid JSON token `NaN`, which breaks
+`JSON.parse()` in the browser. Fixed with `keep_default_na=False, na_values=['']` in
+`local_data_service.py`. Missing coordinates are also sanitised before building any response.
+
+## Known limitations
+
+- **Overpass reliability.** The public servers were timing out during development. The live
+  route search has so far been tested only against simulated servers, not a healthy real one.
+- **Sparse corridor data.** Without live data, a route may have few curated stops (Hyderabad to
+  Munnar gave 1).
+- **No offline hotel fallback yet.** Hotels depend entirely on live data until the dataset is added.
+- Transport options are a heuristic, and the itinerary is generated deterministically.
+- Live attractions may include `amenity=bar` results in Highlights (under review).
 
 ## Deployment
 
-- **Frontend** → Vercel: set `VITE_API_URL` to your deployed backend URL as an environment variable, build command `npm run build`, output dir `dist`.
-- **Backend** → Render: set `SECRET_KEY`, `JWT_SECRET_KEY`, `CORS_ORIGINS` (your Vercel URL) as environment variables. Start command: `gunicorn app:app`.
-
-## Notes
-
-- Nominatim/Overpass have usage limits and rate-limiting for heavy traffic — for production
-  scale, consider self-hosting or a caching layer.
-- Transport (flight/train/bus) availability and costs are **heuristic estimates** based on
-  distance, since no free, keyless API exposes live schedules — this is clearly labeled in the UI.
-- The AI Itinerary is a deterministic planner built from real nearby-attraction data; the
-  service is structured so a real LLM call can be swapped in without touching routes.
-- The curated restaurant CSVs are geocoded via a one-time offline script
-  (`backend/scripts/geocode_restaurant_csvs.py`) using Nominatim, since coordinates aren't
-  available from the travel-blog sources the data was compiled from. Coverage is currently
-  48% (69/143 rows) — the rest are genuinely absent from OpenStreetMap's database even at
-  neighbourhood level, confirmed by a stable re-run with zero network errors and 100%
-  consistent "not found" results. Rows without coordinates are still shown (with `null`
-  lat/lon) rather than dropped, since the restaurant name/veg-status/opening-hours data is
-  still useful even without a map pin.
+- **Frontend (Vercel):** set `VITE_API_URL` to the backend URL, build `npm run build`, output `dist`.
+- **Backend (Render):** set `SECRET_KEY`, `JWT_SECRET_KEY`, `CORS_ORIGINS`. Start command: `gunicorn app:app`.

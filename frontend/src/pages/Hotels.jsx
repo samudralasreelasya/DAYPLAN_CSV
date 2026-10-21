@@ -22,15 +22,17 @@ export default function Hotels() {
               <Card key={h.id}>
                 <div className="flex items-start justify-between">
                   <h4 className="font-semibold">{h.name}</h4>
-                  <span className="flex items-center gap-1 text-sm text-amber-500">
-                    <FiStar /> {h.stars || (3 + Math.random() * 2).toFixed(1)}
-                  </span>
+                  {h.stars ? (
+                    <span className="flex items-center gap-1 text-sm text-amber-500">
+                      <FiStar /> {h.stars}
+                    </span>
+                  ) : null}
                 </div>
                 <p className="mt-2 flex items-center gap-1 text-xs text-slate-400">
                   <FiMapPin /> {h.distanceKm} km from center
                 </p>
                 <p className="mt-1 flex items-center gap-1 text-xs text-slate-400">
-                  <FiDollarSign /> Price varies — check booking sites for live rates
+                  <FiDollarSign /> Price varies â€” check booking sites for live rates
                 </p>
               </Card>
             ))}

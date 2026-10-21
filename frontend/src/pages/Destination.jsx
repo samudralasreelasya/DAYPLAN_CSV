@@ -1,20 +1,9 @@
 import { motion } from "framer-motion";
-import { FiStar, FiMapPin, FiSun } from "react-icons/fi";
+import { FiMapPin, FiSun } from "react-icons/fi";
 import { useTrip } from "../context/TripContext.jsx";
 import TripTabs from "../components/TripTabs.jsx";
 import EmptyTripState from "../components/EmptyTripState.jsx";
 import { Card, SectionHeading } from "../components/UI.jsx";
-
-// Deterministic "rating" based on the place name, so it stays stable across
-// re-renders instead of flickering with Math.random(). This is illustrative
-// placeholder data, not a real review score — worth noting in the project report.
-function getStableRating(name) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = (hash * 31 + name.charCodeAt(i)) % 100;
-  }
-  return (4 + hash / 100).toFixed(1);
-}
 
 export default function Destination() {
   const { tripData } = useTrip();
@@ -53,9 +42,6 @@ export default function Destination() {
                 />
                 <div className="flex items-start justify-between">
                   <h4 className="font-semibold">{a.name}</h4>
-                  <span className="flex items-center gap-1 text-sm text-amber-500">
-                    <FiStar /> {getStableRating(a.name)}
-                  </span>
                 </div>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{a.category}</p>
                 <p className="mt-2 flex items-center gap-1 text-xs text-slate-400">
