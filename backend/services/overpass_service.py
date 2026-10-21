@@ -160,7 +160,7 @@ def get_attractions(lat, lon, radius_m=5000):
 
 def get_highlights(lat, lon, radius_m=5000):
     """Notable named 'highlight' spots near a destination - dams,
-    viewpoints, forests, scenic bars/parks - a broader, looser category
+    viewpoints, forests, parks - a broader, looser category
     than get_attractions() (which is museums/historic sites only).
     Feeds the destination-radius highlights tag feature."""
     query = f"""
@@ -173,7 +173,7 @@ def get_highlights(lat, lon, radius_m=5000):
       way["landuse"="forest"](around:{radius_m},{lat},{lon});
       node["waterway"="dam"](around:{radius_m},{lat},{lon});
       way["waterway"="dam"](around:{radius_m},{lat},{lon});
-      node["amenity"="bar"](around:{radius_m},{lat},{lon});
+
       node["leisure"="park"](around:{radius_m},{lat},{lon});
     );
     out center 30;

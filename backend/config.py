@@ -26,4 +26,4 @@ class Config:
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:5173").split(",")
 
     # Required by Nominatim's usage policy: identify the app in requests
-    USER_AGENT = "DayPlanApp/1.0 (contact@dayplan.example)"
+    USER_AGENT = f"DayPlanApp/1.0 ({os.environ.get('CONTACT_EMAIL', 'set-CONTACT_EMAIL-in-.env')})"

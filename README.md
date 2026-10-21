@@ -172,7 +172,6 @@ purpose (no diet tag), and `jsonify()` then writes the invalid JSON token `NaN`,
   Munnar gave 1).
 - **No offline hotel fallback yet.** Hotels depend entirely on live data until the dataset is added.
 - Transport options are a heuristic, and the itinerary is generated deterministically.
-- Live attractions may include `amenity=bar` results in Highlights (under review).
 
 ## Deployment
 
