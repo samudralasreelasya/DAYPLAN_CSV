@@ -1,7 +1,11 @@
 import os
 from datetime import timedelta
 
+from dotenv import load_dotenv
+
 basedir = os.path.abspath(os.path.dirname(__file__))
+# Read backend/.env (if present) BEFORE the Config class below reads os.environ.
+load_dotenv(os.path.join(basedir, ".env"))
 
 
 class Config:
